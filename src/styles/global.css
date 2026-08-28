@@ -94,6 +94,11 @@ blockquote {
 .prose { max-width: var(--measure); }
 main { padding: 3rem 0 4rem; }
 
+/* Títulos dentro de texto corrido precisam de ar acima, senão colam no parágrafo anterior. */
+.prose h2 { margin-top: 3rem; }
+.prose h3 { margin-top: 2rem; }
+.prose > :first-child { margin-top: 0; }
+
 .skip {
   position: absolute;
   left: -9999px;
