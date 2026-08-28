@@ -3,10 +3,11 @@ import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import ProjetoCard from '../components/ProjetoCard.astro';
 import ListaArtigos from '../components/ListaArtigos.astro';
-import { projetos } from '../data/projetos';
+import { destaques } from '../data/projetos';
 import { site } from '../config';
 
-const destaques = projetos.slice(0, 3);
+// Os fixados no perfil do GitHub, limitados a 3 para a home.
+const emDestaque = destaques.slice(0, 3);
 
 const artigos = (await getCollection('artigos', ({ data }) => !data.draft))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
@@ -43,7 +44,7 @@ const artigos = (await getCollection('artigos', ({ data }) => !data.draft))
   <section class="section">
     <h2>Projetos em destaque <a href="/projetos">todos os projetos</a></h2>
     <div class="grid">
-      {destaques.map((projeto) => <ProjetoCard projeto={projeto} compacto />)}
+      {emDestaque.map((projeto) => <ProjetoCard projeto={projeto} compacto />)}
     </div>
   </section>
 

@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import ProjetoCard from '../components/ProjetoCard.astro';
-import { projetos } from '../data/projetos';
+import { projetos, grupos } from '../data/projetos';
 import { site } from '../config';
 
 // ItemList de SoftwareSourceCode: descreve cada projeto como código-fonte,
@@ -33,7 +33,7 @@ const jsonld = {
 
 <Base
   title="Projetos de automação de testes"
-  description="Frameworks e ferramentas open source de automação de testes criados por Jonnas Figueiredo: Appium, Playwright, MCP e IA aplicada a QA."
+  description="Frameworks e ferramentas open source de automação de testes criados por Jonnas Figueiredo: Appium, Playwright, Selenium, MCP e avaliação de qualidade de IA."
   jsonld={jsonld}
   breadcrumb={[{ nome: 'Projetos', href: '/projetos' }]}
 >
@@ -42,22 +42,35 @@ const jsonld = {
     <h1>Projetos open source de automação de testes</h1>
     <p class="lead">
       Cada um destes projetos nasceu de um problema real de qualidade que eu quis resolver
-      direito, e não de um exercício. São os mesmos que mantenho em destaque no meu
-      <a href={site.profiles.github} rel="me noopener">GitHub</a>.
+      direito, e não de um exercício. Todos são públicos no
+      <a href={site.profiles.github} rel="me noopener">GitHub</a> e rodam em CI.
     </p>
   </header>
 
-  <div class="grid">
-    {projetos.map((projeto) => <ProjetoCard projeto={projeto} />)}
-  </div>
+  {
+    grupos.map((grupo) => {
+      const doGrupo = projetos.filter((p) => p.grupo === grupo.id);
+      return (
+        <section class="section">
+          <h2>{grupo.titulo}</h2>
+          <p class="dim resumo">{grupo.resumo}</p>
+          <div class="grid">
+            {doGrupo.map((projeto) => (
+              <ProjetoCard projeto={projeto} />
+            ))}
+          </div>
+        </section>
+      );
+    })
+  }
 
   <section class="section prose">
     <h2>Como eu escolho o que construir</h2>
     <p>
       A maior parte destas ferramentas resolve alguma versão do mesmo incômodo: automação de
       testes costuma parar no caminho feliz. Framework mobile que não reseta estado, suíte de
-      e-commerce que só testa um navegador, requisito que vira caso de teste no braço. Cada
-      projeto ataca um desses pontos, e todos rodam em CI.
+      e-commerce que só testa um navegador, requisito que vira caso de teste no braço, modelo de
+      linguagem que ninguém sabe avaliar. Cada projeto ataca um desses pontos.
     </p>
   </section>
 </Base>
@@ -66,10 +79,13 @@ const jsonld = {
   .topo h1 {
     margin-bottom: 0.5rem;
   }
+  .resumo {
+    margin: -0.3rem 0 1.2rem;
+    font-size: 0.95rem;
+  }
   .grid {
     display: grid;
     gap: 1rem;
     grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
-    margin-top: 2.5rem;
   }
 </style>
