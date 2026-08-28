@@ -11,8 +11,10 @@ interface Props {
   appendName?: boolean;
   ogType?: 'website' | 'article';
   noindex?: boolean;
-  /** JSON-LD adicional específico da página (ex.: BlogPosting). */
-  jsonld?: Record<string, unknown>;
+  /** JSON-LD adicional específico da página (ex.: BlogPosting, ItemList). */
+  jsonld?: Record<string, unknown> | Record<string, unknown>[];
+  /** Trilha de navegação. A home é adicionada automaticamente. */
+  breadcrumb?: { nome: string; href: string }[];
 }
 
 const {
@@ -22,44 +24,63 @@ const {
   ogType = 'website',
   noindex = false,
   jsonld,
+  breadcrumb = [],
 } = Astro.props;
 
-const fullTitle = appendName ? `${title} · ${site.name}` : title;
+const fullTitle = appendName ? `${title} | ${site.name}` : title;
 const canonical = new URL(Astro.url.pathname.replace(/\/$/, '') || '/', site.url).href;
 
 // Entidade principal do site. É isto que consolida "Jonnas Figueiredo" como
 // entidade única para o Google, ligando este domínio aos perfis externos.
-const graph = {
-  '@context': 'https://schema.org',
-  '@graph': [
-    {
-      '@type': 'Person',
-      '@id': `${site.url}/#person`,
-      name: site.name,
-      url: site.url,
-      jobTitle: site.jobTitle,
-      email: `mailto:${site.email}`,
-      description: site.description,
-      knowsAbout: [
-        'Automação de testes',
-        'Quality Assurance',
-        'Selenium',
-        'Appium',
-        'Java',
-        'Avaliação de modelos de linguagem',
-      ],
-      sameAs,
-    },
-    {
-      '@type': 'WebSite',
-      '@id': `${site.url}/#website`,
-      url: site.url,
-      name: site.name,
-      inLanguage: site.locale,
-      publisher: { '@id': `${site.url}/#person` },
-    },
-  ],
-};
+const graph: Record<string, unknown>[] = [
+  {
+    '@type': 'Person',
+    '@id': `${site.url}/#person`,
+    name: site.name,
+    url: site.url,
+    jobTitle: site.jobTitle,
+    email: `mailto:${site.email}`,
+    description: site.description,
+    nationality: { '@type': 'Country', name: 'Brasil' },
+    knowsLanguage: ['pt-BR', 'en'],
+    knowsAbout: [
+      'Automação de testes',
+      'Quality Assurance',
+      'Teste de software',
+      'Selenium',
+      'Appium',
+      'Playwright',
+      'Java',
+      'TypeScript',
+      'Testes de API',
+      'Avaliação de modelos de linguagem',
+    ],
+    sameAs,
+  },
+  {
+    '@type': 'WebSite',
+    '@id': `${site.url}/#website`,
+    url: site.url,
+    name: site.name,
+    description: site.description,
+    inLanguage: site.locale,
+    publisher: { '@id': `${site.url}/#person` },
+  },
+];
+
+if (breadcrumb.length > 0) {
+  graph.push({
+    '@type': 'BreadcrumbList',
+    itemListElement: [{ nome: 'Início', href: '/' }, ...breadcrumb].map((b, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: b.nome,
+      item: new URL(b.href, site.url).href,
+    })),
+  });
+}
+
+const extras = jsonld ? (Array.isArray(jsonld) ? jsonld : [jsonld]) : [];
 ---
 
 <!doctype html>
@@ -69,8 +90,18 @@ const graph = {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
+    <meta name="author" content={site.name} />
     <link rel="canonical" href={canonical} />
-    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    {
+      noindex ? (
+        <meta name="robots" content="noindex, nofollow" />
+      ) : (
+        <meta
+          name="robots"
+          content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+        />
+      )
+    }
 
     <meta property="og:type" content={ogType} />
     <meta property="og:title" content={fullTitle} />
@@ -79,6 +110,8 @@ const graph = {
     <meta property="og:locale" content="pt_BR" />
     <meta property="og:site_name" content={site.name} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
 
     <link rel="sitemap" href="/sitemap-index.xml" />
     <link
@@ -88,8 +121,18 @@ const graph = {
       href={new URL('rss.xml', site.url).href}
     />
 
-    <script type="application/ld+json" set:html={JSON.stringify(graph)} />
-    {jsonld && <script type="application/ld+json" set:html={JSON.stringify(jsonld)} />}
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({ '@context': 'https://schema.org', '@graph': graph })}
+    />
+    {
+      extras.map((item) => (
+        <script
+          type="application/ld+json"
+          set:html={JSON.stringify({ '@context': 'https://schema.org', ...item })}
+        />
+      ))
+    }
   </head>
   <body>
     <a class="skip" href="#conteudo">Pular para o conteúdo</a>

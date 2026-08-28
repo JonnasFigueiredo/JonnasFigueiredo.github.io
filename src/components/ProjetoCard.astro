@@ -3,7 +3,7 @@ import type { Projeto } from '../data/projetos';
 
 interface Props {
   projeto: Projeto;
-  /** Na home mostramos a versão curta, sem a origem do nome. */
+  /** Na home mostramos a versão curta, sem a origem do nome nem a descrição longa. */
   compacto?: boolean;
 }
 
@@ -12,10 +12,12 @@ const { projeto, compacto = false } = Astro.props;
 
 <article class="card">
   <h3>
-    <a href={projeto.repo} rel="noopener">{projeto.nome}</a>
+    <a href={projeto.repo} rel="noopener" title={`Repositório de ${projeto.nome} no GitHub`}>
+      {projeto.nome}
+    </a>
   </h3>
-  {!compacto && <p class="origem">{projeto.origem}</p>}
-  <p class="desc">{projeto.descricao}</p>
+  {!compacto && projeto.origem && <p class="origem">{projeto.origem}</p>}
+  <p class="desc">{compacto ? projeto.resumo : projeto.descricao}</p>
   <ul class="stack-list">
     {projeto.stack.map((s) => <li class="tag">{s}</li>)}
   </ul>

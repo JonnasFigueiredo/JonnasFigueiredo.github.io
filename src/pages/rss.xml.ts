@@ -9,7 +9,7 @@ export const GET: APIRoute = async (context) => {
   );
 
   return rss({
-    title: `${site.name} — Artigos`,
+    title: `Artigos de ${site.name}`,
     description: site.description,
     site: context.site ?? site.url,
     trailingSlash: false,

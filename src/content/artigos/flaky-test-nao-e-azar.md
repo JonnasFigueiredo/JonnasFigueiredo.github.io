@@ -1,6 +1,6 @@
 ---
 title: "Flaky test não é azar: é acoplamento com o ambiente"
-description: "Todo teste intermitente esconde uma dependência não declarada — tempo, ordem de execução, estado compartilhado ou rede. Um roteiro para descobrir qual delas é, em vez de aumentar o timeout e seguir em frente."
+description: "Todo teste intermitente esconde uma dependência não declarada: tempo, ordem de execução, estado compartilhado ou rede. Um roteiro para descobrir qual delas é, em vez de aumentar o timeout e seguir em frente."
 pubDate: 2026-08-12
 tags: ["automação", "Selenium", "boas práticas"]
 ---
@@ -9,7 +9,7 @@ O teste passa na sua máquina. Passa de novo. Falha no pipeline. Você roda outr
 Alguém abre um PR configurando três tentativas e a vida segue.
 
 O problema é que esse teste parou de ser um teste. Ele virou um gerador de ruído, e o custo real
-não é o tempo perdido — é que o time aprende a ignorar vermelho. Depois de algumas semanas, uma
+não é o tempo perdido, é que o time aprende a ignorar vermelho. Depois de algumas semanas, uma
 falha legítima passa despercebida porque "esse aí sempre falha".
 
 Teste intermitente não é azar. É sempre uma dependência que o teste tem mas não declarou.
@@ -23,12 +23,12 @@ Na prática, quase toda intermitência que já investiguei caiu em uma destas qu
 A mais comum em UI. O teste assume que algo já aconteceu quando ainda não aconteceu.
 
 O sintoma clássico é a espera fixa espalhada pelo código, ou um sleep que "resolveu" o problema.
-Ele não resolveu — ele calibrou o teste para a velocidade da sua máquina naquele dia. Na máquina
+Ele não resolveu, apenas calibrou o teste para a velocidade da sua máquina naquele dia. Na máquina
 do CI, que é mais lenta e roda quatro jobs em paralelo, a janela não vale mais.
 
 A correção é sempre a mesma: espere pela **condição**, não pelo relógio. Espere o elemento ficar
 clicável, espere a requisição terminar, espere o indicador de carregamento sumir. Se você não
-consegue expressar a condição, esse é o bug de verdade — a aplicação não está te dando um sinal
+consegue expressar a condição, esse é o bug de verdade, porque a aplicação não está te dando um sinal
 observável de que terminou.
 
 ### 2. Ordem de execução
@@ -47,9 +47,9 @@ execução e vale cada segundo.
 Dois testes rodando ao mesmo tempo usam o mesmo usuário, o mesmo registro, a mesma fila. Um
 altera, o outro lê.
 
-O sintoma característico é que a intermitência **aumenta quando você aumenta o paralelismo** —
-uma correlação que vale a pena medir antes de sair caçando. A correção passa por dados isolados
-por execução: usuário gerado na hora, identificador único por thread, schema por worker.
+O sintoma característico é que a intermitência **aumenta quando você aumenta o paralelismo**,
+e essa é uma correlação que vale a pena medir antes de sair caçando. A correção passa por dados
+isolados por execução: usuário gerado na hora, identificador único por thread, schema por worker.
 
 ### 4. Rede e dependências externas
 

@@ -1,51 +1,78 @@
 ---
 import Base from '../layouts/Base.astro';
 import ProjetoCard from '../components/ProjetoCard.astro';
-import { projetos, grupos } from '../data/projetos';
+import { projetos } from '../data/projetos';
+import { site } from '../config';
+
+// ItemList de SoftwareSourceCode: descreve cada projeto como código-fonte,
+// com linguagem e autoria ligadas à entidade Person do site.
+const jsonld = {
+  '@type': 'CollectionPage',
+  name: 'Projetos de automação de testes',
+  url: new URL('/projetos', site.url).href,
+  inLanguage: site.locale,
+  about: { '@id': `${site.url}/#person` },
+  mainEntity: {
+    '@type': 'ItemList',
+    numberOfItems: projetos.length,
+    itemListElement: projetos.map((p, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      item: {
+        '@type': 'SoftwareSourceCode',
+        name: p.nome,
+        description: p.descricao,
+        codeRepository: p.repo,
+        programmingLanguage: p.linguagem,
+        author: { '@id': `${site.url}/#person` },
+      },
+    })),
+  },
+};
 ---
 
 <Base
-  title="Projetos"
-  description="Projetos open source de Jonnas Figueiredo: frameworks de automação de testes, avaliação de LLMs, servidores MCP e experimentos."
+  title="Projetos de automação de testes"
+  description="Frameworks e ferramentas open source de automação de testes criados por Jonnas Figueiredo: Appium, Playwright, MCP e IA aplicada a QA."
+  jsonld={jsonld}
+  breadcrumb={[{ nome: 'Projetos', href: '/projetos' }]}
 >
   <header class="topo prose">
     <p class="eyebrow">Projetos</p>
-    <h1>O que eu construo</h1>
+    <h1>Projetos open source de automação de testes</h1>
     <p class="lead">
-      Quase tudo aqui nasceu de um problema real de qualidade que eu queria resolver direito.
-      Os nomes vêm da mitologia grega — cada um diz algo sobre o que a ferramenta faz.
+      Cada um destes projetos nasceu de um problema real de qualidade que eu quis resolver
+      direito, e não de um exercício. São os mesmos que mantenho em destaque no meu
+      <a href={site.profiles.github} rel="me noopener">GitHub</a>.
     </p>
   </header>
 
-  {
-    grupos.map((grupo) => {
-      const doGrupo = projetos.filter((p) => p.grupo === grupo.id);
-      return (
-        <section class="section">
-          <h2>{grupo.titulo}</h2>
-          <p class="dim resumo">{grupo.resumo}</p>
-          <div class="grid">
-            {doGrupo.map((projeto) => (
-              <ProjetoCard projeto={projeto} />
-            ))}
-          </div>
-        </section>
-      );
-    })
-  }
+  <div class="grid">
+    {projetos.map((projeto) => <ProjetoCard projeto={projeto} />)}
+  </div>
+
+  <section class="section prose">
+    <h2>Como eu escolho o que construir</h2>
+    <p>
+      A maior parte destas ferramentas resolve alguma versão do mesmo incômodo: automação de
+      testes costuma parar no caminho feliz. Framework mobile que não reseta estado, suíte de
+      e-commerce que só testa um navegador, requisito que vira caso de teste no braço. Cada
+      projeto ataca um desses pontos, e todos rodam em CI.
+    </p>
+    <p>
+      Escrevo sobre as decisões por trás deles nos <a href="/artigos">artigos</a>.
+    </p>
+  </section>
 </Base>
 
 <style>
   .topo h1 {
     margin-bottom: 0.5rem;
   }
-  .resumo {
-    margin: -0.3rem 0 1.2rem;
-    font-size: 0.95rem;
-  }
   .grid {
     display: grid;
     gap: 1rem;
     grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+    margin-top: 2.5rem;
   }
 </style>

@@ -1,11 +1,12 @@
 export const site = {
   url: 'https://jonnasfigueiredo.github.io',
   name: 'Jonnas Figueiredo',
-  jobTitle: 'QA Automation Engineer / SDET',
-  // Usada como <meta name="description"> da home e no JSON-LD.
+  jobTitle: 'QA Automation Engineer e SDET',
+  // Usada como <meta name="description"> padrão e no JSON-LD.
   description:
-    'Engenheiro de automação de testes (QA/SDET). Escrevo sobre qualidade de software, ' +
-    'automação de testes e avaliação de sistemas de IA.',
+    'Jonnas Figueiredo é engenheiro de automação de testes (QA/SDET) com mais de 3 anos de ' +
+    'experiência em Java, Selenium, Appium e Playwright. Projetos open source e artigos sobre ' +
+    'qualidade de software.',
   locale: 'pt-BR',
   email: 'jonnas.figueiredo01@hotmail.com',
   // `sameAs` é o que consolida a entidade no Google. Só perfis que você controla.

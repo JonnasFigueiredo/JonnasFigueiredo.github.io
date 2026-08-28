@@ -2,22 +2,45 @@
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import ListaArtigos from '../../components/ListaArtigos.astro';
+import { site } from '../../config';
 
 const artigos = (await getCollection('artigos', ({ data }) => !data.draft)).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
+
+const jsonld = {
+  '@type': 'Blog',
+  '@id': `${site.url}/artigos#blog`,
+  name: `Artigos de ${site.name}`,
+  description:
+    'Artigos sobre qualidade de software, automação de testes e avaliação de sistemas de IA.',
+  url: new URL('/artigos', site.url).href,
+  inLanguage: site.locale,
+  author: { '@id': `${site.url}/#person` },
+  publisher: { '@id': `${site.url}/#person` },
+  blogPost: artigos.map((a) => ({
+    '@type': 'BlogPosting',
+    headline: a.data.title,
+    description: a.data.description,
+    datePublished: a.data.pubDate.toISOString(),
+    url: new URL(`/artigos/${a.id}`, site.url).href,
+  })),
+};
 ---
 
 <Base
-  title="Artigos"
-  description="Artigos de Jonnas Figueiredo sobre qualidade de software, automação de testes, Selenium, Appium e avaliação de sistemas de IA."
+  title="Artigos sobre qualidade de software e automação de testes"
+  description="Artigos de Jonnas Figueiredo sobre automação de testes, arquitetura de suítes, testes flaky, Selenium, Appium, Playwright e avaliação de sistemas de IA."
+  jsonld={jsonld}
+  breadcrumb={[{ nome: 'Artigos', href: '/artigos' }]}
 >
   <header class="topo prose">
     <p class="eyebrow">Artigos</p>
-    <h1>Escrevendo sobre qualidade</h1>
+    <h1>Artigos sobre qualidade de software</h1>
     <p class="lead">
-      Notas sobre automação de testes, arquitetura de suítes e como testar sistemas que não
-      dão a mesma resposta duas vezes. <a href="/rss.xml">Assine o RSS</a>.
+      Notas sobre automação de testes, arquitetura de suítes e como testar sistemas que não dão
+      a mesma resposta duas vezes. Publico em português porque é onde falta material bom.
+      <a href="/rss.xml">Assine o RSS</a>.
     </p>
   </header>
 
