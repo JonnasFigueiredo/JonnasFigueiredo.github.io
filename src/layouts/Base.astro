@@ -114,12 +114,6 @@ const extras = jsonld ? (Array.isArray(jsonld) ? jsonld : [jsonld]) : [];
     <meta name="twitter:description" content={description} />
 
     <link rel="sitemap" href="/sitemap-index.xml" />
-    <link
-      rel="alternate"
-      type="application/rss+xml"
-      title={`Artigos de ${site.name}`}
-      href={new URL('rss.xml', site.url).href}
-    />
 
     <script
       type="application/ld+json"
