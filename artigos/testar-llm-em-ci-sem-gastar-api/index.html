@@ -1,0 +1,71 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Como testar um LLM em CI sem gastar um centavo de API · Jonnas Figueiredo</title><meta name="description" content="Modelos de linguagem são não-determinísticos, e isso quebra a premissa básica de qualquer suíte de testes. Dá para resolver com respostas gravadas, baselines versionados e um provedor falso — sem chamar a API de verdade no pipeline."><link rel="canonical" href="https://jonnasfigueiredo.github.io/artigos/testar-llm-em-ci-sem-gastar-api"><meta property="og:type" content="article"><meta property="og:title" content="Como testar um LLM em CI sem gastar um centavo de API · Jonnas Figueiredo"><meta property="og:description" content="Modelos de linguagem são não-determinísticos, e isso quebra a premissa básica de qualquer suíte de testes. Dá para resolver com respostas gravadas, baselines versionados e um provedor falso — sem chamar a API de verdade no pipeline."><meta property="og:url" content="https://jonnasfigueiredo.github.io/artigos/testar-llm-em-ci-sem-gastar-api"><meta property="og:locale" content="pt_BR"><meta property="og:site_name" content="Jonnas Figueiredo"><meta name="twitter:card" content="summary_large_image"><link rel="sitemap" href="/sitemap-index.xml"><link rel="alternate" type="application/rss+xml" title="Artigos de Jonnas Figueiredo" href="https://jonnasfigueiredo.github.io/rss.xml"><script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Person","@id":"https://jonnasfigueiredo.github.io/#person","name":"Jonnas Figueiredo","url":"https://jonnasfigueiredo.github.io","jobTitle":"QA Automation Engineer / SDET","email":"mailto:jonnas.figueiredo01@hotmail.com","description":"Engenheiro de automação de testes (QA/SDET). Escrevo sobre qualidade de software, automação de testes e avaliação de sistemas de IA.","knowsAbout":["Automação de testes","Quality Assurance","Selenium","Appium","Java","Avaliação de modelos de linguagem"],"sameAs":["https://github.com/JonnasFigueiredo","https://www.linkedin.com/in/jonnas-figueiredo-576a14181","https://www.youtube.com/@JonnasFigo"]},{"@type":"WebSite","@id":"https://jonnasfigueiredo.github.io/#website","url":"https://jonnasfigueiredo.github.io","name":"Jonnas Figueiredo","inLanguage":"pt-BR","publisher":{"@id":"https://jonnasfigueiredo.github.io/#person"}}]}</script><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Como testar um LLM em CI sem gastar um centavo de API","description":"Modelos de linguagem são não-determinísticos, e isso quebra a premissa básica de qualquer suíte de testes. Dá para resolver com respostas gravadas, baselines versionados e um provedor falso — sem chamar a API de verdade no pipeline.","datePublished":"2026-08-20T00:00:00.000Z","dateModified":"2026-08-20T00:00:00.000Z","inLanguage":"pt-BR","keywords":["IA","CI","estratégia de testes"],"author":{"@id":"https://jonnasfigueiredo.github.io/#person"},"publisher":{"@id":"https://jonnasfigueiredo.github.io/#person"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://jonnasfigueiredo.github.io/artigos/testar-llm-em-ci-sem-gastar-api"}}</script><link rel="stylesheet" href="/_astro/Base.CTQ7m8Hy.css"><style>header[data-astro-cid-f7dacvao]{margin-bottom:2.5rem}h1[data-astro-cid-f7dacvao]{margin-bottom:.5rem}.meta[data-astro-cid-f7dacvao]{font-family:var(--mono);color:var(--text-faint);margin:0 0 .9rem;font-size:.76rem}.corpo[data-astro-cid-f7dacvao] h2{margin-top:2.5rem}.corpo[data-astro-cid-f7dacvao] h3{margin-top:2rem}.corpo[data-astro-cid-f7dacvao] ul,.corpo[data-astro-cid-f7dacvao] ol{padding-left:1.3rem}.corpo[data-astro-cid-f7dacvao] li{margin-bottom:.4rem}footer[data-astro-cid-f7dacvao]{border-top:1px solid var(--border);margin-top:3.5rem;padding-top:1.5rem;font-size:.92rem}
+</style></head><body><a class="skip" href="#conteudo">Pular para o conteúdo</a><header data-astro-cid-nen7h5rs><div class="wrap bar" data-astro-cid-nen7h5rs><a class="brand" href="/" data-astro-cid-nen7h5rs><span class="brand-name" data-astro-cid-nen7h5rs>Jonnas Figueiredo</span><span class="brand-role" data-astro-cid-nen7h5rs>QA Automation Engineer / SDET</span></a><nav aria-label="Navegação principal" data-astro-cid-nen7h5rs><ul data-astro-cid-nen7h5rs><li data-astro-cid-nen7h5rs><a href="/" data-astro-cid-nen7h5rs>Início</a></li><li data-astro-cid-nen7h5rs><a href="/projetos" data-astro-cid-nen7h5rs>Projetos</a></li><li data-astro-cid-nen7h5rs><a href="/artigos" aria-current="page" data-astro-cid-nen7h5rs>Artigos</a></li><li data-astro-cid-nen7h5rs><a href="/sobre" data-astro-cid-nen7h5rs>Sobre</a></li></ul></nav></div></header><main id="conteudo"><div class="wrap"><article class="prose" data-astro-cid-f7dacvao><header data-astro-cid-f7dacvao><p class="eyebrow" data-astro-cid-f7dacvao>Artigo</p><h1 data-astro-cid-f7dacvao>Como testar um LLM em CI sem gastar um centavo de API</h1><p class="meta" data-astro-cid-f7dacvao><time datetime="2026-08-20" data-astro-cid-f7dacvao>20 de agosto de 2026</time></p><ul class="stack-list" data-astro-cid-f7dacvao><li class="tag" data-astro-cid-f7dacvao>IA</li><li class="tag" data-astro-cid-f7dacvao>CI</li><li class="tag" data-astro-cid-f7dacvao>estratégia de testes</li></ul></header><div class="corpo" data-astro-cid-f7dacvao><p>Toda suíte de testes que já escrevi parte de uma premissa: dada a mesma entrada, o sistema
+devolve a mesma saída. É isso que permite escrever uma asserção e confiar nela.</p>
+<p>Modelos de linguagem quebram essa premissa. A mesma pergunta pode gerar respostas diferentes a
+cada chamada — e mesmo com temperatura zero, uma troca de versão do modelo do lado do provedor
+muda o resultado sem aviso. O efeito prático é conhecido: ou o time não testa o que a IA
+produz, ou cria um pipeline que falha de forma aleatória e que todo mundo aprende a ignorar.</p>
+<h2 id="o-problema-não-é-o-não-determinismo-é-a-pergunta">O problema não é o não-determinismo, é a pergunta</h2>
+<p>A pergunta que a maioria dos times tenta responder no teste é “a resposta está certa?”. Essa
+pergunta não tem asserção possível quando existem mil respostas certas.</p>
+<p>A pergunta útil é outra: <strong>“minha última mudança de prompt ou de modelo melhorou ou piorou a
+qualidade?”</strong> Essa é comparativa, e comparação é algo que se automatiza.</p>
+<h2 id="separe-as-duas-coisas-que-você-está-testando">Separe as duas coisas que você está testando</h2>
+<p>Na prática, existem dois testes escondidos dentro de “testar a IA”:</p>
+<ol>
+<li><strong>A sua aplicação</strong> — o parsing da resposta, o tratamento de erro, o timeout, o retry, o
+contrato da API, o que acontece quando o modelo devolve JSON inválido. Isso é a maior parte
+do risco real e é completamente determinístico.</li>
+<li><strong>A qualidade do modelo</strong> — se a resposta é fiel à fonte, se responde ao que foi perguntado,
+se recusa o que deveria recusar.</li>
+</ol>
+<p>O erro comum é misturar os dois no mesmo teste e chamar a API de verdade para ambos.</p>
+<h2 id="para-a-aplicação-um-provedor-falso">Para a aplicação: um provedor falso</h2>
+<p>Todo o grupo 1 roda contra um provedor falso que devolve respostas gravadas. Custo zero, tempo
+de execução em milissegundos, e você consegue exercitar exatamente os cenários que são difíceis
+de provocar contra a API real:</p>
+<ul>
+<li>o modelo devolveu JSON malformado</li>
+<li>o modelo devolveu vazio</li>
+<li>a chamada estourou o timeout</li>
+<li>veio erro 429 de rate limit</li>
+<li>a resposta veio truncada no meio</li>
+</ul>
+<p>Esses são os bugs que derrubam o serviço em produção, e nenhum deles precisa de uma chamada real
+para ser reproduzido. Grave as respostas uma vez, versione junto com o código, rode a cada commit.</p>
+<h2 id="para-a-qualidade-baseline-e-comparação">Para a qualidade: baseline e comparação</h2>
+<p>O grupo 2 é onde entra o não-determinismo de verdade. A técnica é a mesma de teste de regressão
+visual: você não afirma que a saída está certa, você afirma que <strong>não piorou em relação a um
+baseline aprovado</strong>.</p>
+<p>O ciclo funciona assim:</p>
+<ul>
+<li>Monte um conjunto de casos de avaliação com entrada e resultado esperado — não a resposta
+literal, mas os critérios que ela precisa cumprir.</li>
+<li>Rode o conjunto contra o modelo e registre o resultado como baseline, versionado no
+repositório.</li>
+<li>A cada mudança de prompt ou de modelo, rode de novo e compare com o baseline.</li>
+<li>O pipeline falha se a métrica cair além de um limite que você definiu.</li>
+</ul>
+<p>O ponto importante é que o baseline é um artefato revisável. Quando ele muda, isso aparece no
+diff do pull request e alguém precisa aprovar. A mudança de qualidade deixa de ser invisível.</p>
+<h2 id="onde-as-métricas-entram">Onde as métricas entram</h2>
+<p>Para casos de RAG, algumas métricas dão asserção objetiva sem precisar julgar o texto:</p>
+<ul>
+<li><strong>Recall de retrieval</strong> — o trecho correto estava entre os recuperados? Isso é binário e não
+depende do modelo generativo.</li>
+<li><strong>Fidelidade</strong> — cada afirmação da resposta está sustentada por um trecho recuperado?</li>
+<li><strong>Taxa de recusa</strong> — em entradas que deveriam ser recusadas, o sistema recusou?</li>
+</ul>
+<p>As duas primeiras são checáveis com heurísticas determinísticas em boa parte dos casos. Só o que
+sobra depois disso precisa de julgamento por modelo — e aí a chamada real vira opt-in, rodando
+fora do pipeline principal, no ritmo que o orçamento permitir.</p>
+<h2 id="o-resultado">O resultado</h2>
+<p>O pipeline principal roda a cada commit, é determinístico, custa zero e falha só quando algo
+realmente quebrou. A avaliação cara roda quando você decide, e o baseline garante que uma queda
+de qualidade apareça como um diff e não como uma surpresa em produção.</p>
+<p>Foi mais ou menos por esse caminho que acabei construindo o
+<a href="https://github.com/JonnasFigueiredo/Aletheia">Aletheia</a> e a
+<a href="https://github.com/JonnasFigueiredo/Pythia">Pythia</a> — o primeiro em Java, a segunda em Python.
+A ideia dos dois é a mesma: transformar “avaliar um modelo” em algo que o CI consegue responder
+com verde ou vermelho.</p>
+</div><footer data-astro-cid-f7dacvao><a href="/artigos" data-astro-cid-f7dacvao>← Todos os artigos</a></footer></article></div></main><footer data-astro-cid-jo6i4kqk><div class="wrap inner" data-astro-cid-jo6i4kqk><p class="dim" data-astro-cid-jo6i4kqk>© 2026 Jonnas Figueiredo</p><ul data-astro-cid-jo6i4kqk><li data-astro-cid-jo6i4kqk><a href="https://github.com/JonnasFigueiredo" rel="me noopener" data-astro-cid-jo6i4kqk>GitHub</a></li><li data-astro-cid-jo6i4kqk><a href="https://www.linkedin.com/in/jonnas-figueiredo-576a14181" rel="me noopener" data-astro-cid-jo6i4kqk>LinkedIn</a></li><li data-astro-cid-jo6i4kqk><a href="https://www.youtube.com/@JonnasFigo" rel="me noopener" data-astro-cid-jo6i4kqk>YouTube</a></li><li data-astro-cid-jo6i4kqk><a href="mailto:jonnas.figueiredo01@hotmail.com" data-astro-cid-jo6i4kqk>E-mail</a></li><li data-astro-cid-jo6i4kqk><a href="/rss.xml" data-astro-cid-jo6i4kqk>RSS</a></li></ul></div></footer></body></html>

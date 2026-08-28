@@ -1,0 +1,60 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Flaky test não é azar: é acoplamento com o ambiente · Jonnas Figueiredo</title><meta name="description" content="Todo teste intermitente esconde uma dependência não declarada — tempo, ordem de execução, estado compartilhado ou rede. Um roteiro para descobrir qual delas é, em vez de aumentar o timeout e seguir em frente."><link rel="canonical" href="https://jonnasfigueiredo.github.io/artigos/flaky-test-nao-e-azar"><meta property="og:type" content="article"><meta property="og:title" content="Flaky test não é azar: é acoplamento com o ambiente · Jonnas Figueiredo"><meta property="og:description" content="Todo teste intermitente esconde uma dependência não declarada — tempo, ordem de execução, estado compartilhado ou rede. Um roteiro para descobrir qual delas é, em vez de aumentar o timeout e seguir em frente."><meta property="og:url" content="https://jonnasfigueiredo.github.io/artigos/flaky-test-nao-e-azar"><meta property="og:locale" content="pt_BR"><meta property="og:site_name" content="Jonnas Figueiredo"><meta name="twitter:card" content="summary_large_image"><link rel="sitemap" href="/sitemap-index.xml"><link rel="alternate" type="application/rss+xml" title="Artigos de Jonnas Figueiredo" href="https://jonnasfigueiredo.github.io/rss.xml"><script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Person","@id":"https://jonnasfigueiredo.github.io/#person","name":"Jonnas Figueiredo","url":"https://jonnasfigueiredo.github.io","jobTitle":"QA Automation Engineer / SDET","email":"mailto:jonnas.figueiredo01@hotmail.com","description":"Engenheiro de automação de testes (QA/SDET). Escrevo sobre qualidade de software, automação de testes e avaliação de sistemas de IA.","knowsAbout":["Automação de testes","Quality Assurance","Selenium","Appium","Java","Avaliação de modelos de linguagem"],"sameAs":["https://github.com/JonnasFigueiredo","https://www.linkedin.com/in/jonnas-figueiredo-576a14181","https://www.youtube.com/@JonnasFigo"]},{"@type":"WebSite","@id":"https://jonnasfigueiredo.github.io/#website","url":"https://jonnasfigueiredo.github.io","name":"Jonnas Figueiredo","inLanguage":"pt-BR","publisher":{"@id":"https://jonnasfigueiredo.github.io/#person"}}]}</script><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Flaky test não é azar: é acoplamento com o ambiente","description":"Todo teste intermitente esconde uma dependência não declarada — tempo, ordem de execução, estado compartilhado ou rede. Um roteiro para descobrir qual delas é, em vez de aumentar o timeout e seguir em frente.","datePublished":"2026-08-12T00:00:00.000Z","dateModified":"2026-08-12T00:00:00.000Z","inLanguage":"pt-BR","keywords":["automação","Selenium","boas práticas"],"author":{"@id":"https://jonnasfigueiredo.github.io/#person"},"publisher":{"@id":"https://jonnasfigueiredo.github.io/#person"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://jonnasfigueiredo.github.io/artigos/flaky-test-nao-e-azar"}}</script><link rel="stylesheet" href="/_astro/Base.CTQ7m8Hy.css"><style>header[data-astro-cid-f7dacvao]{margin-bottom:2.5rem}h1[data-astro-cid-f7dacvao]{margin-bottom:.5rem}.meta[data-astro-cid-f7dacvao]{font-family:var(--mono);color:var(--text-faint);margin:0 0 .9rem;font-size:.76rem}.corpo[data-astro-cid-f7dacvao] h2{margin-top:2.5rem}.corpo[data-astro-cid-f7dacvao] h3{margin-top:2rem}.corpo[data-astro-cid-f7dacvao] ul,.corpo[data-astro-cid-f7dacvao] ol{padding-left:1.3rem}.corpo[data-astro-cid-f7dacvao] li{margin-bottom:.4rem}footer[data-astro-cid-f7dacvao]{border-top:1px solid var(--border);margin-top:3.5rem;padding-top:1.5rem;font-size:.92rem}
+</style></head><body><a class="skip" href="#conteudo">Pular para o conteúdo</a><header data-astro-cid-nen7h5rs><div class="wrap bar" data-astro-cid-nen7h5rs><a class="brand" href="/" data-astro-cid-nen7h5rs><span class="brand-name" data-astro-cid-nen7h5rs>Jonnas Figueiredo</span><span class="brand-role" data-astro-cid-nen7h5rs>QA Automation Engineer / SDET</span></a><nav aria-label="Navegação principal" data-astro-cid-nen7h5rs><ul data-astro-cid-nen7h5rs><li data-astro-cid-nen7h5rs><a href="/" data-astro-cid-nen7h5rs>Início</a></li><li data-astro-cid-nen7h5rs><a href="/projetos" data-astro-cid-nen7h5rs>Projetos</a></li><li data-astro-cid-nen7h5rs><a href="/artigos" aria-current="page" data-astro-cid-nen7h5rs>Artigos</a></li><li data-astro-cid-nen7h5rs><a href="/sobre" data-astro-cid-nen7h5rs>Sobre</a></li></ul></nav></div></header><main id="conteudo"><div class="wrap"><article class="prose" data-astro-cid-f7dacvao><header data-astro-cid-f7dacvao><p class="eyebrow" data-astro-cid-f7dacvao>Artigo</p><h1 data-astro-cid-f7dacvao>Flaky test não é azar: é acoplamento com o ambiente</h1><p class="meta" data-astro-cid-f7dacvao><time datetime="2026-08-12" data-astro-cid-f7dacvao>12 de agosto de 2026</time></p><ul class="stack-list" data-astro-cid-f7dacvao><li class="tag" data-astro-cid-f7dacvao>automação</li><li class="tag" data-astro-cid-f7dacvao>Selenium</li><li class="tag" data-astro-cid-f7dacvao>boas práticas</li></ul></header><div class="corpo" data-astro-cid-f7dacvao><p>O teste passa na sua máquina. Passa de novo. Falha no pipeline. Você roda outra vez e passa.
+Alguém abre um PR configurando três tentativas e a vida segue.</p>
+<p>O problema é que esse teste parou de ser um teste. Ele virou um gerador de ruído, e o custo real
+não é o tempo perdido — é que o time aprende a ignorar vermelho. Depois de algumas semanas, uma
+falha legítima passa despercebida porque “esse aí sempre falha”.</p>
+<p>Teste intermitente não é azar. É sempre uma dependência que o teste tem mas não declarou.</p>
+<h2 id="as-quatro-fontes">As quatro fontes</h2>
+<p>Na prática, quase toda intermitência que já investiguei caiu em uma destas quatro.</p>
+<h3 id="1-tempo">1. Tempo</h3>
+<p>A mais comum em UI. O teste assume que algo já aconteceu quando ainda não aconteceu.</p>
+<p>O sintoma clássico é a espera fixa espalhada pelo código, ou um sleep que “resolveu” o problema.
+Ele não resolveu — ele calibrou o teste para a velocidade da sua máquina naquele dia. Na máquina
+do CI, que é mais lenta e roda quatro jobs em paralelo, a janela não vale mais.</p>
+<p>A correção é sempre a mesma: espere pela <strong>condição</strong>, não pelo relógio. Espere o elemento ficar
+clicável, espere a requisição terminar, espere o indicador de carregamento sumir. Se você não
+consegue expressar a condição, esse é o bug de verdade — a aplicação não está te dando um sinal
+observável de que terminou.</p>
+<h3 id="2-ordem-de-execução">2. Ordem de execução</h3>
+<p>O teste passa sozinho e falha na suíte, ou o contrário. Isso significa que ele depende de algo
+que outro teste deixou para trás: um registro no banco, uma sessão aberta, um cache quente.</p>
+<p>O diagnóstico é direto: rode a suíte em ordem aleatória. Se a taxa de falha muda, você tem
+acoplamento de ordem. A maioria dos runners suporta isso com uma flag.</p>
+<p>A correção é cada teste construir o próprio estado e limpá-lo depois. Custa mais tempo de
+execução e vale cada segundo.</p>
+<h3 id="3-estado-compartilhado-e-paralelismo">3. Estado compartilhado e paralelismo</h3>
+<p>Dois testes rodando ao mesmo tempo usam o mesmo usuário, o mesmo registro, a mesma fila. Um
+altera, o outro lê.</p>
+<p>O sintoma característico é que a intermitência <strong>aumenta quando você aumenta o paralelismo</strong> —
+uma correlação que vale a pena medir antes de sair caçando. A correção passa por dados isolados
+por execução: usuário gerado na hora, identificador único por thread, schema por worker.</p>
+<h3 id="4-rede-e-dependências-externas">4. Rede e dependências externas</h3>
+<p>Serviço de terceiro, ambiente compartilhado, DNS, latência. Aqui vale distinguir o que você está
+testando: se o objetivo é o seu fluxo, o terceiro deveria estar simulado. Se o objetivo é a
+integração de verdade, esse teste provavelmente não pertence ao pipeline que roda a cada commit.</p>
+<h2 id="como-investigar-de-fato">Como investigar de fato</h2>
+<p>O instinto é olhar o teste que falhou. Quase nunca é o caminho mais curto. O roteiro que
+funciona:</p>
+<ol>
+<li><strong>Meça antes de consertar.</strong> Rode o teste isolado 50 vezes. Depois rode a suíte inteira 20
+vezes. As duas taxas de falha, comparadas, já eliminam metade das hipóteses.</li>
+<li><strong>Não confie no print da falha.</strong> Guarde o vídeo, o HTML da página no momento do erro e os
+logs do backend correlacionados por horário. O print mostra o sintoma; os logs mostram a
+causa.</li>
+<li><strong>Reproduza no ambiente errado de propósito.</strong> Rode com CPU limitada, com rede lenta, com
+paralelismo dobrado. Se a taxa dispara, você achou a dimensão.</li>
+<li><strong>Só então mude o código.</strong></li>
+</ol>
+<h2 id="o-que-fazer-enquanto-não-conserta">O que fazer enquanto não conserta</h2>
+<p>Quarentena, não repetição automática. Mova o teste para um conjunto separado que roda mas não
+bloqueia o merge, com prazo e responsável. Repetir a execução até passar esconde o problema e
+mantém a falsa sensação de cobertura.</p>
+<p>E registre a taxa de intermitência como métrica visível do time. O que não é medido não é
+priorizado, e teste flaky é sempre a coisa que alguém vai consertar na semana que vem.</p>
+<h2 id="o-incômodo-que-vale-a-pena">O incômodo que vale a pena</h2>
+<p>Na maioria das vezes que persegui um flaky até o fim, o que estava por trás não era um problema
+do teste. Era uma condição de corrida real na aplicação, que em produção aparece uma vez a cada
+mil requisições e vira um chamado que ninguém consegue reproduzir.</p>
+<p>O teste intermitente foi só o primeiro lugar onde ela ficou visível.</p>
+</div><footer data-astro-cid-f7dacvao><a href="/artigos" data-astro-cid-f7dacvao>← Todos os artigos</a></footer></article></div></main><footer data-astro-cid-jo6i4kqk><div class="wrap inner" data-astro-cid-jo6i4kqk><p class="dim" data-astro-cid-jo6i4kqk>© 2026 Jonnas Figueiredo</p><ul data-astro-cid-jo6i4kqk><li data-astro-cid-jo6i4kqk><a href="https://github.com/JonnasFigueiredo" rel="me noopener" data-astro-cid-jo6i4kqk>GitHub</a></li><li data-astro-cid-jo6i4kqk><a href="https://www.linkedin.com/in/jonnas-figueiredo-576a14181" rel="me noopener" data-astro-cid-jo6i4kqk>LinkedIn</a></li><li data-astro-cid-jo6i4kqk><a href="https://www.youtube.com/@JonnasFigo" rel="me noopener" data-astro-cid-jo6i4kqk>YouTube</a></li><li data-astro-cid-jo6i4kqk><a href="mailto:jonnas.figueiredo01@hotmail.com" data-astro-cid-jo6i4kqk>E-mail</a></li><li data-astro-cid-jo6i4kqk><a href="/rss.xml" data-astro-cid-jo6i4kqk>RSS</a></li></ul></div></footer></body></html>
