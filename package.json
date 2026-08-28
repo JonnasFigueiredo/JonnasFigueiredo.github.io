@@ -7,11 +7,15 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "check": "astro check"
+    "check": "astro check",
+    "deploy": "astro build && gh-pages -d dist --dotfiles -m \"Publica build do site\""
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.7.3",
     "astro": "^7.2.9"
+  },
+  "devDependencies": {
+    "gh-pages": "^6.3.0"
   }
 }

@@ -51,15 +51,29 @@ Conteúdo em Markdown.
 
 ## Deploy
 
-Hospedado no **GitHub Pages**, no repositório `JonnasFigueiredo.github.io`.
-Todo push na `main` dispara `.github/workflows/deploy.yml`, que builda e publica.
-Não precisa commitar `dist/`.
+Site em <https://jonnasfigueiredo.github.io>, hospedado no GitHub Pages.
 
-Requisitos que só se configuram uma vez:
+- Branch **`main`** = código-fonte
+- Branch **`gh-pages`** = site publicado (gerado, não editar na mão)
 
-- Repositório **público** (Pages em conta gratuita exige)
-- Settings → Pages → **Source: GitHub Actions**
-- Token do `gh` com escopo `workflow` (`gh auth refresh -s workflow`)
+Para publicar qualquer alteração:
+
+```bash
+npm run deploy
+```
+
+Isso builda e envia o `dist/` para a `gh-pages`. O site atualiza em ~1 minuto.
+Commitar na `main` é histórico; publicar é o `npm run deploy`.
+
+O `public/.nojekyll` é obrigatório: sem ele o Pages roda Jekyll e descarta a
+pasta `_astro/`, deixando o site sem CSS.
+
+### Migrar para deploy automático (opcional)
+
+Hoje a publicação é manual porque o token do `gh` não tem o escopo `workflow`.
+Para automatizar, rode `gh auth login -h github.com -p https -w -s workflow`,
+adicione um workflow usando `withastro/action@v3` + `actions/deploy-pages@v4`
+e troque a origem em Settings → Pages para **GitHub Actions**.
 
 ## Migrar para domínio próprio
 
