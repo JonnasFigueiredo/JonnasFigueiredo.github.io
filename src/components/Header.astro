@@ -1,0 +1,81 @@
+---
+import { nav, site } from '../config';
+
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+---
+
+<header>
+  <div class="wrap bar">
+    <a class="brand" href="/">
+      <span class="brand-name">{site.name}</span>
+      <span class="brand-role">{site.jobTitle}</span>
+    </a>
+    <nav aria-label="Navegação principal">
+      <ul>
+        {
+          nav.map((item) => (
+            <li>
+              <a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  header {
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    padding: 1.1rem 0;
+  }
+  .brand {
+    color: inherit;
+    text-decoration: none;
+    display: grid;
+    line-height: 1.3;
+  }
+  .brand-name {
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .brand-role {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+  nav ul {
+    display: flex;
+    gap: 1.25rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: 0.94rem;
+  }
+  nav a {
+    color: var(--text-dim);
+    text-decoration: none;
+    padding-bottom: 2px;
+    border-bottom: 1px solid transparent;
+  }
+  nav a:hover {
+    color: var(--text);
+  }
+  nav a[aria-current='page'] {
+    color: var(--text);
+    border-bottom-color: var(--accent);
+  }
+</style>

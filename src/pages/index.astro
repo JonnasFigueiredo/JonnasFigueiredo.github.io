@@ -1,0 +1,75 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import ProjetoCard from '../components/ProjetoCard.astro';
+import ListaArtigos from '../components/ListaArtigos.astro';
+import { projetos } from '../data/projetos';
+import { site } from '../config';
+
+const destaques = projetos.filter((p) => p.destaque);
+
+const artigos = (await getCollection('artigos', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 3);
+---
+
+<Base
+  title={`${site.name} — ${site.jobTitle}`}
+  appendName={false}
+  description="Jonnas Figueiredo é engenheiro de automação de testes (QA/SDET). Projetos open source de qualidade de software, automação de testes e avaliação de sistemas de IA."
+>
+  <section class="hero">
+    <p class="eyebrow">{site.jobTitle}</p>
+    <h1>Jonnas Figueiredo</h1>
+    <p class="lead">
+      Construo automação de testes que dá segurança para entregar sem regressão — web, mobile,
+      API e backend. Trabalho principalmente com Java, Selenium e Appium, e venho aplicando o
+      mesmo rigor de engenharia a sistemas de IA, que são não-determinísticos por natureza.
+    </p>
+    <p>
+      O que me move não é a ferramenta, é entender o negócio por trás do sistema. No fim, é isso
+      que faz um teste valer alguma coisa. Também palestro sobre qualidade e automação.
+    </p>
+    <ul class="links">
+      <li><a href="/projetos">Ver projetos</a></li>
+      <li><a href="/artigos">Ler artigos</a></li>
+      <li><a href={site.profiles.github} rel="me noopener">GitHub</a></li>
+      <li><a href={site.profiles.linkedin} rel="me noopener">LinkedIn</a></li>
+    </ul>
+  </section>
+
+  <section class="section">
+    <h2>Projetos em destaque <a href="/projetos">todos os projetos →</a></h2>
+    <div class="grid">
+      {destaques.map((projeto) => <ProjetoCard projeto={projeto} compacto />)}
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Artigos recentes <a href="/artigos">todos os artigos →</a></h2>
+    <ListaArtigos artigos={artigos} />
+  </section>
+</Base>
+
+<style>
+  .hero {
+    max-width: var(--measure);
+  }
+  .hero h1 {
+    margin-bottom: 0.6rem;
+  }
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    list-style: none;
+    padding: 0;
+    margin: 1.75rem 0 0;
+    font-size: 0.95rem;
+  }
+  .grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  }
+</style>

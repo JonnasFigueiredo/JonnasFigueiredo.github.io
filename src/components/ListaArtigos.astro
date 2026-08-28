@@ -1,0 +1,61 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { formatarData, formatarDataISO } from '../utils/data';
+
+interface Props {
+  artigos: CollectionEntry<'artigos'>[];
+}
+
+const { artigos } = Astro.props;
+---
+
+{
+  artigos.length === 0 ? (
+    <p class="dim">Nenhum artigo publicado ainda.</p>
+  ) : (
+    <ul class="lista">
+      {artigos.map((artigo) => (
+        <li>
+          <article>
+            <h3>
+              <a href={`/artigos/${artigo.id}`}>{artigo.data.title}</a>
+            </h3>
+            <p class="desc">{artigo.data.description}</p>
+            <time datetime={formatarDataISO(artigo.data.pubDate)}>
+              {formatarData(artigo.data.pubDate)}
+            </time>
+          </article>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+<style>
+  .lista {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1.6rem;
+  }
+  h3 {
+    margin: 0 0 0.25rem;
+  }
+  h3 a {
+    text-decoration: none;
+  }
+  h3 a:hover {
+    text-decoration: underline;
+  }
+  .desc {
+    margin: 0 0 0.3rem;
+    color: var(--text-dim);
+    font-size: 0.95rem;
+  }
+  time {
+    font-family: var(--mono);
+    font-size: 0.74rem;
+    color: var(--text-faint);
+  }
+</style>
