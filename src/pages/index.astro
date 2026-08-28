@@ -48,10 +48,16 @@ const artigos = (await getCollection('artigos', ({ data }) => !data.draft))
     </div>
   </section>
 
-  <section class="section">
-    <h2>Artigos recentes <a href="/artigos">todos os artigos</a></h2>
-    <ListaArtigos artigos={artigos} />
-  </section>
+  {
+    artigos.length > 0 && (
+      <section class="section">
+        <h2>
+          Artigos recentes <a href="/artigos">todos os artigos</a>
+        </h2>
+        <ListaArtigos artigos={artigos} />
+      </section>
+    )
+  }
 </Base>
 
 <style>

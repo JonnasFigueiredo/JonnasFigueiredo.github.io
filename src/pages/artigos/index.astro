@@ -8,6 +8,10 @@ const artigos = (await getCollection('artigos', ({ data }) => !data.draft)).sort
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
 
+// Sem artigos ainda: nada de Blog schema vazio, e a página fica fora do índice
+// para não entrar no Google como conteúdo raso. Volta sozinho no primeiro post.
+const vazio = artigos.length === 0;
+
 const jsonld = {
   '@type': 'Blog',
   '@id': `${site.url}/artigos#blog`,
@@ -31,7 +35,8 @@ const jsonld = {
 <Base
   title="Artigos sobre qualidade de software e automação de testes"
   description="Artigos de Jonnas Figueiredo sobre automação de testes, arquitetura de suítes, testes flaky, Selenium, Appium, Playwright e avaliação de sistemas de IA."
-  jsonld={jsonld}
+  jsonld={vazio ? undefined : jsonld}
+  noindex={vazio}
   breadcrumb={[{ nome: 'Artigos', href: '/artigos' }]}
 >
   <header class="topo prose">
@@ -40,7 +45,11 @@ const jsonld = {
     <p class="lead">
       Notas sobre automação de testes, arquitetura de suítes e como testar sistemas que não dão
       a mesma resposta duas vezes. Publico em português porque é onde falta material bom.
-      <a href="/rss.xml">Assine o RSS</a>.
+      {!vazio && (
+        <>
+          <a href="/rss.xml">Assine o RSS</a>.
+        </>
+      )}
     </p>
   </header>
 
