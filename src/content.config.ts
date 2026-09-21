@@ -1,4 +1,5 @@
-import { defineCollection, z } from 'astro:content';
+import { defineCollection } from 'astro:content';
+import { z } from 'astro/zod';
 import { glob } from 'astro/loaders';
 
 const artigos = defineCollection({
@@ -10,6 +11,12 @@ const artigos = defineCollection({
     updatedDate: z.coerce.date().optional(),
     tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
+    kind: z.enum(['guia', 'traducao']).default('guia'),
+    originalUrl: z.url().optional(),
+    originalAuthor: z.string().optional(),
+    section: z.enum(['guia', 'tecnica', 'caso', 'leitura']).default('tecnica'),
+    category: z.string().default('Análise de negócio'),
+    whenUse: z.string().optional(),
   }),
 });
 

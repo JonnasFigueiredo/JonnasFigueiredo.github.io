@@ -1,0 +1,24 @@
+---
+const measurementId = import.meta.env.PUBLIC_GA_MEASUREMENT_ID?.trim() ?? '';
+const enabled = /^G-[A-Z0-9]+$/.test(measurementId);
+---
+{enabled && (
+  <section id="analytics-consent" data-measurement-id={measurementId} aria-labelledby="consent-title" hidden>
+    <div class="wrap">
+      <h2 id="consent-title">Estatísticas de acesso</h2>
+      <p>Posso usar o Google Analytics para entender quais páginas e materiais são acessados? O conteúdo continua disponível se você recusar. <a href="/privacidade">Como funciona</a>.</p>
+      <div class="choices"><button type="button" data-consent="accepted">Permitir estatísticas</button><button type="button" data-consent="denied">Não permitir</button></div>
+    </div>
+  </section>
+)}
+<script>
+  import { initAnalytics } from '../scripts/analytics';
+  initAnalytics();
+</script>
+<style>
+  section { border-top: 1px solid var(--border); padding-block: 1.5rem; }
+  h2 { font-size: 1.15rem; }
+  p { font-size: 0.9rem; }
+  .choices { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+  button { border: 1px solid var(--border); border-radius: 4px; padding: 0.55rem 0.8rem; color: var(--text); background: var(--surface); }
+</style>

@@ -13,6 +13,8 @@ export type Projeto = {
   grupo: Grupo;
   /** Marcado nos repositórios que estão fixados no perfil do GitHub. */
   destaque?: boolean;
+  /** Página pública de instalação, quando o projeto está publicado numa loja. */
+  loja?: string;
 };
 
 const repo = (n: string) => `https://github.com/JonnasFigueiredo/${n}`;
@@ -69,6 +71,7 @@ export const projetos: Projeto[] = [
       'coleta nada.',
     stack: ['JavaScript', 'Chrome MV3'],
     repo: repo('proteu'),
+    loja: 'https://chromewebstore.google.com/detail/proteu-qa-test-data-and-s/edpjppimngkekieldgokejdccfpiehgn',
     linguagem: 'JavaScript',
     grupo: 'automacao',
     destaque: true,
@@ -116,7 +119,7 @@ export const projetos: Projeto[] = [
   },
   {
     nome: 'Pythia',
-    resumo: 'Serviço RAG com a suíte PyTest que prova que ele funciona',
+    resumo: 'Serviço RAG com testes de recuperação, fidelidade e segurança em PyTest',
     origem: 'Πυθία, a sacerdotisa oracular de Delfos',
     descricao:
       'Aplicação RAG acompanhada de uma suíte de qualidade de IA em PyTest: métricas de ' +

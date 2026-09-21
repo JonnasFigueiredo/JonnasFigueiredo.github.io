@@ -18,12 +18,11 @@ export const site = {
 
 export const sameAs = Object.values(site.profiles);
 
-// A seção de artigos está fora do ar até existir conteúdo.
-// Para reativar: descomente a linha abaixo, restaure src/pages/artigos/index.astro
-// (está no histórico do git) e volte o link do RSS no rodapé.
 export const nav = [
-  { href: '/', label: 'Início' },
-  { href: '/projetos', label: 'Projetos' },
-  // { href: '/artigos', label: 'Artigos' },
+  { href: '/guia', label: 'Guia' },
+  { href: '/tecnicas', label: 'Técnicas' },
+  { href: '/leituras', label: 'Leituras' },
+  { href: '/ferramenta', label: 'Ferramenta' },
   { href: '/sobre', label: 'Sobre' },
+  { href: '/links', label: 'Links' },
 ];

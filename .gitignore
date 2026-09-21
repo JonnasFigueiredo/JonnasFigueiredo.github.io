@@ -4,3 +4,9 @@ dist/
 .env
 .env.production
 .DS_Store
+test-results/
+playwright-report/
+
+# Materiais antigos da palestra (PDFs e kit gerados de versões anteriores dos textos).
+# Ficam fora do repositório público até serem regenerados e aprovados.
+public/materiais/

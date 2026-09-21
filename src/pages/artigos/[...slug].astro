@@ -1,138 +1,50 @@
 ---
 import type { GetStaticPaths } from 'astro';
 import { getCollection, render, type CollectionEntry } from 'astro:content';
-import Base from '../../layouts/Base.astro';
-import { formatarData, formatarDataISO } from '../../utils/data';
+import Study from '../../layouts/Study.astro';
+import ProteuNote from '../../components/ProteuNote.astro';
 import { site } from '../../config';
-
-export const getStaticPaths: GetStaticPaths = async () => {
-  const artigos = await getCollection('artigos', ({ data }) => !data.draft);
-  return artigos.map((artigo) => ({
-    params: { slug: artigo.id },
-    props: { artigo },
-  }));
-};
-
+import { techniqueOrder } from '../../data/learning';
+export const getStaticPaths: GetStaticPaths = async () => (await getCollection('artigos', ({data})=>!data.draft)).map(artigo=>({params:{slug:artigo.id},props:{artigo}}));
 type Props = { artigo: CollectionEntry<'artigos'> };
-
 const { artigo } = Astro.props;
-const { Content } = await render(artigo);
-
-const url = new URL(`/artigos/${artigo.id}`, site.url).href;
-
-// Contagem aproximada, só para preencher wordCount e o tempo de leitura.
-const palavras = artigo.body?.split(/\s+/).length ?? 0;
-const minutos = Math.max(1, Math.round(palavras / 200));
-
-// BlogPosting explícito: é o que habilita o artigo a aparecer como resultado
-// rico e o que amarra a autoria à entidade Person do site.
+if(artigo.id==='guia-para-investigar-regras-de-negocio') return Astro.redirect('/guia',301);
+const { Content, headings } = await render(artigo);
+const words = artigo.body?.split(/\s+/).length ?? 0;
+const group = artigo.data.section==='caso'?'Estudos de caso':artigo.data.section==='leitura'?'Leituras':artigo.data.section==='guia'?'Guia':'Técnicas';
 const jsonld = {
-  '@type': 'BlogPosting',
-  headline: artigo.data.title,
-  description: artigo.data.description,
-  datePublished: artigo.data.pubDate.toISOString(),
-  dateModified: (artigo.data.updatedDate ?? artigo.data.pubDate).toISOString(),
-  inLanguage: site.locale,
-  keywords: artigo.data.tags,
-  articleSection: artigo.data.tags[0],
-  wordCount: palavras,
-  timeRequired: `PT${minutos}M`,
-  author: { '@id': `${site.url}/#person` },
-  publisher: { '@id': `${site.url}/#person` },
-  isPartOf: { '@id': `${site.url}/artigos#blog` },
-  mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+  '@type':'BlogPosting', headline:artigo.data.title, description:artigo.data.description,
+  datePublished:artigo.data.pubDate.toISOString(),
+  dateModified:(artigo.data.updatedDate??artigo.data.pubDate).toISOString(), inLanguage:site.locale, wordCount:words,
+  author:artigo.data.kind==='traducao'?{'@type':'Organization',name:artigo.data.originalAuthor}:{'@id':site.url+'/#person'},
+  ...(artigo.data.kind==='traducao'?{translator:{'@id':site.url+'/#person'},isBasedOn:artigo.data.originalUrl}:{}),
+  publisher:{'@id':site.url+'/#person'}, mainEntityOfPage:{'@type':'WebPage','@id':site.url+'/artigos/'+artigo.id},
 };
+const index = techniqueOrder.indexOf(artigo.id);
+const all = await getCollection('artigos');
+const prev = index>=0 ? all.find(a=>a.id===techniqueOrder[index-1]) : undefined;
+const next = index>=0 ? all.find(a=>a.id===techniqueOrder[index+1]) : undefined;
 ---
-
-<Base
-  title={artigo.data.title}
-  description={artigo.data.description}
-  ogType="article"
-  jsonld={jsonld}
-  breadcrumb={[
-    { nome: 'Artigos', href: '/artigos' },
-    { nome: artigo.data.title, href: `/artigos/${artigo.id}` },
-  ]}
->
-  <article class="prose">
-    <header>
-      <p class="eyebrow">Artigo</p>
-      <h1>{artigo.data.title}</h1>
-      <p class="meta">
-        <time datetime={formatarDataISO(artigo.data.pubDate)}>
-          {formatarData(artigo.data.pubDate)}
-        </time>
-        {' · '}{minutos} min de leitura
-        {
-          artigo.data.updatedDate && (
-            <>
-              {' · atualizado em '}
-              <time datetime={formatarDataISO(artigo.data.updatedDate)}>
-                {formatarData(artigo.data.updatedDate)}
-              </time>
-            </>
-          )
-        }
-      </p>
-      {
-        artigo.data.tags.length > 0 && (
-          <ul class="stack-list">
-            {artigo.data.tags.map((t) => (
-              <li class="tag">{t}</li>
-            ))}
-          </ul>
-        )
-      }
-    </header>
-
-    <div class="corpo">
-      <Content />
-    </div>
-
-    <footer>
-      <p>
-        Escrito por <a href="/sobre">Jonnas Figueiredo</a>, engenheiro de automação de testes.
-        Veja também os <a href="/projetos">projetos open source</a>.
-      </p>
-      <p><a href="/artigos">Todos os artigos</a></p>
-    </footer>
-  </article>
-</Base>
-
+<Study title={artigo.data.title} description={artigo.data.description} category={artigo.data.category} minutes={Math.max(1,Math.ceil(words/200))} headings={headings} jsonld={jsonld} group={group} whenUse={artigo.data.whenUse} articleId={artigo.id}>
+  <Content />
+  <div slot="after">
+    {artigo.id==='valores-limite' && <ProteuNote placement="limites" />}
+    {artigo.id==='relatar-problemas' && <ProteuNote placement="relato" />}
+    <div class="apply"><p>Leve esta prática para uma decisão da sua tarefa.</p><a class="btn primary" href="/ferramenta">Aplicar na ferramenta <span aria-hidden="true">→</span></a></div>
+    <nav class="pager" aria-label="Continuar o estudo">
+      <a href={prev?'/artigos/'+prev.id:'/guia'}><span class="label">← Anterior</span><b>{prev?.data.title??'Voltar ao guia'}</b></a>
+      <a href={next?'/artigos/'+next.id:'/ferramenta'}><span class="label">Próximo →</span><b>{next?.data.title??'Aplicar na ferramenta'}</b></a>
+    </nav>
+  </div>
+</Study>
 <style>
-  header {
-    margin-bottom: 2.5rem;
-  }
-  h1 {
-    margin-bottom: 0.5rem;
-  }
-  .meta {
-    font-family: var(--mono);
-    font-size: 0.76rem;
-    color: var(--text-faint);
-    margin: 0 0 0.9rem;
-  }
-  .corpo :global(h2) {
-    margin-top: 2.5rem;
-  }
-  .corpo :global(h3) {
-    margin-top: 2rem;
-  }
-  .corpo :global(ul),
-  .corpo :global(ol) {
-    padding-left: 1.3rem;
-  }
-  .corpo :global(li) {
-    margin-bottom: 0.4rem;
-  }
-  footer {
-    margin-top: 3.5rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--border);
-    font-size: 0.92rem;
-    color: var(--text-dim);
-  }
-  footer p {
-    margin: 0 0 0.5rem;
-  }
+  .apply { display:flex; justify-content:space-between; align-items:center; gap:16px 24px; flex-wrap:wrap; border-top:1px solid var(--rule); padding-top:28px; margin-top:56px; }
+  .apply p { margin:0; color:var(--ink-2); font-style:italic; }
+  .pager { display:grid; grid-template-columns:1fr 1fr; border-top:1px solid var(--ink); margin-top:48px; }
+  .pager a { padding:18px 0; text-decoration:none; }
+  .pager a + a { text-align:right; border-left:1px solid var(--rule); padding-left:20px; }
+  .pager .label { display:block; margin-bottom:4px; }
+  .pager b { font:500 1.2rem/1.3 var(--serif); }
+  .pager a:hover b { text-decoration:underline; text-decoration-color:var(--rule); text-underline-offset:4px; }
+  @media(max-width:560px) { .pager { grid-template-columns:1fr; } .pager a + a { text-align:left; border-left:0; padding-left:0; border-top:1px solid var(--rule); } }
 </style>

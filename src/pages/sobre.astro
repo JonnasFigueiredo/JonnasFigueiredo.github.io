@@ -1,115 +1,22 @@
 ---
 import Base from '../layouts/Base.astro';
-import { site } from '../config';
-
-const jsonld = {
-  '@type': 'ProfilePage',
-  name: `Sobre ${site.name}`,
-  url: new URL('/sobre', site.url).href,
-  inLanguage: site.locale,
-  mainEntity: { '@id': `${site.url}/#person` },
-};
-
-const stack = {
-  Linguagens: ['Java', 'TypeScript', 'Python'],
-  'Automação de testes': [
-    'Selenium',
-    'Appium',
-    'Playwright',
-    'Cucumber',
-    'JUnit 5',
-    'PyTest',
-    'RestAssured',
-  ],
-  'Backend e infraestrutura': ['Spring Boot', 'FastAPI', 'Docker', 'MySQL'],
-  'CI e relatórios': ['GitHub Actions', 'Allure', 'Git'],
-};
+import {site} from '../config';
+import {projetos} from '../data/projetos';
+const chosen=projetos.filter(p=>p.repo.endsWith('/proteu')||p.repo.endsWith('/hefesto'));
+const jsonld={'@type':'ProfilePage',name:'Sobre Jonnas Figueiredo',mainEntity:{'@id':site.url+'/#person'}};
 ---
-
-<Base
-  title="Sobre Jonnas Figueiredo | QA Automation Engineer e SDET"
-  appendName={false}
-  description="Engenheiro de automação de testes (QA/SDET) atuando com testes web, mobile, API e backend. Java, Selenium, Appium, Playwright e qualidade de sistemas de IA."
-  jsonld={jsonld}
-  breadcrumb={[{ nome: 'Sobre', href: '/sobre' }]}
->
+<Base title="Sobre Jonnas Figueiredo" description="QA, autor do guia e criador de Proteu e Hefesto." jsonld={jsonld}>
+  <header class="page-head"><p class="eyebrow">Sobre</p><h1>Jonnas Figueiredo</h1><p class="lead">QA Automation Engineer (SDET)</p></header>
   <article class="prose">
-    <p class="eyebrow">Sobre</p>
-    <h1>Jonnas Figueiredo, engenheiro de automação de testes</h1>
-
-    <p class="lead">
-      Sou engenheiro de automação de testes (QA/SDET). Meu maior domínio é em Java e Selenium,
-      mas o que me move mesmo é entender o negócio por trás do sistema. No fim, é isso que faz
-      um teste valer alguma coisa.
-    </p>
-
-    <p>
-      Trabalho com testes de aplicações web, mobile, API e backend. Além de Java e Selenium,
-      mexo bastante com Appium, Playwright e TypeScript, montando e mantendo a automação que dá
-      segurança para entregar sem regressão.
-    </p>
-
-    <h2>Qualidade em sistemas de IA</h2>
-    <p>
-      Nos últimos tempos venho levando esse mesmo rigor para sistemas de inteligência
-      artificial. Um modelo de linguagem é não-determinístico: a mesma pergunta pode gerar
-      respostas diferentes a cada chamada. Isso quebra a premissa básica de qualquer suíte de
-      testes, e resolver esse problema virou o fio condutor de boa parte do que eu construo.
-    </p>
-
-    <h2>Compartilhar o que aprendo</h2>
-    <p>
-      Faço palestras sobre qualidade e automação de testes e mantenho um canal no{' '}
-      <a href={site.profiles.youtube} rel="me noopener">YouTube</a>. Meus{' '}
-      <a href="/projetos">projetos open source</a> ficam no{' '}
-      <a href={site.profiles.github} rel="me noopener">GitHub</a>.
-    </p>
-
-    <h2>Stack</h2>
-    <dl class="stack">
-      {
-        Object.entries(stack).map(([grupo, itens]) => (
-          <div>
-            <dt>{grupo}</dt>
-            <dd>
-              <ul class="stack-list">
-                {itens.map((i) => (
-                  <li class="tag">{i}</li>
-                ))}
-              </ul>
-            </dd>
-          </div>
-        ))
-      }
-    </dl>
-
-    <h2>Contato</h2>
-    <p>
-      A forma mais direta é por e-mail: <a href={`mailto:${site.email}`}>{site.email}</a>.
-      Também estou no <a href={site.profiles.linkedin} rel="me noopener">LinkedIn</a> e no{' '}
-      <a href={site.profiles.github} rel="me noopener">GitHub</a>.
-    </p>
+    <p>Trabalho com tecnologia desde 2018 e hoje atuo como QA Automation Engineer (SDET). Meu maior domínio é em Java e Selenium, mas o que me move mesmo é entender o negócio por trás do sistema. Quero saber o que o teste está conferindo e por que aquele resultado importa para quem usa o produto.</p>
+    <p>Trabalho com testes de aplicações web, mobile, API e backend. Além de Java e Selenium, mexo bastante com Appium e TypeScript, montando e mantendo automações para conferir os fluxos do produto e encontrar regressões antes da entrega.</p>
+    <p>Também gosto de compartilhar o que aprendo: faço palestras sobre qualidade e automação de testes.</p>
+    <h2>Por que este guia existe</h2>
+    <p>Entrar num domínio novo exige aprender enquanto o trabalho acontece. Este guia reúne formas de começar: recortar uma dúvida, procurar quem conhece o processo, comparar exemplos e registrar a decisão. Os textos de comunicação fazem parte desse caminho, porque entender uma regra também depende de como a gente pergunta e confere a resposta.</p>
+    <p>Você pode seguir pelo <a href="/guia">guia prático</a> ou escolher uma <a href="/tecnicas">técnica pela dúvida da sua tarefa</a>.</p>
+    <h2 id="o-que-eu-construo">O que eu construo</h2>
+    {chosen.map(p=><section class="project"><h3><a href={p.loja??p.repo}>{p.nome==='Proteu QA'?'Proteu':p.nome}</a></h3><p>{p.resumo}.</p><div class="project-links">{p.loja&&<a href={p.loja} rel="noopener">Instalar na Chrome Web Store</a>}<a href={p.repo}>Conhecer no GitHub</a></div></section>)}
+    <h2>Vamos conversar</h2><p>Estou no <a href={site.profiles.linkedin} rel="me noopener">LinkedIn</a>, no <a href={site.profiles.github} rel="me noopener">GitHub</a> e no <a href={site.profiles.youtube} rel="me noopener">YouTube</a>. Também pode falar comigo por <a href={'mailto:'+site.email}>e-mail</a>.</p>
   </article>
 </Base>
-
-<style>
-  h1 {
-    margin-bottom: 0.6rem;
-  }
-  .stack {
-    margin: 0;
-    display: grid;
-    gap: 1.1rem;
-  }
-  dt {
-    font-family: var(--mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text-faint);
-    margin-bottom: 0.45rem;
-  }
-  dd {
-    margin: 0;
-  }
-</style>
+<style>.project-links { display:flex; flex-wrap:wrap; gap:8px 20px; }.project { border-top:1px solid var(--border); padding:20px 0; }.project h3 { margin-top:0; }.project p { margin-bottom:10px; } article { padding-bottom:48px; }</style>

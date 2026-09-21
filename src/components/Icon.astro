@@ -1,0 +1,7 @@
+---
+import { ArrowRight, ArrowLeft, SunMoon, Plus, Trash2, Copy, BookOpen, RotateCcw, Menu, X, Check } from 'lucide';
+const icons = { ArrowRight, ArrowLeft, SunMoon, Plus, Trash2, Copy, BookOpen, RotateCcw, Menu, X, Check };
+interface Props { name: keyof typeof icons; size?: number }
+const { name, size = 18 } = Astro.props;
+---
+<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">{icons[name].map(([Tag, attributes]) => <Tag {...attributes} />)}</svg>

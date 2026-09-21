@@ -1,0 +1,43 @@
+---
+import {getCollection} from 'astro:content';
+import Base from '../layouts/Base.astro';
+import {chapters} from '../data/learning';
+const all=await getCollection('artigos',({data})=>!data.draft);
+const find=(id:string)=>all.find(a=>a.id===id);
+const minutes=(id:string)=>Math.max(1,Math.ceil((find(id)?.body?.split(/\s+/).length??0)/200));
+---
+<Base title="Técnicas para investigar regras de negócio" description="Quando usar cada técnica, como começar e o que conferir na sua tarefa.">
+  <div class="idx">
+    <header class="page-head"><p class="eyebrow">Técnicas</p><h1>Escolha pela dúvida.</h1><p class="lead">Não precisa usar tudo na mesma tarefa. Comece pela prática que ajuda a esclarecer a decisão que está na sua frente.</p></header>
+    {chapters.map((chapter,c)=>(
+      <section class="part" aria-labelledby={'cap-'+c}>
+        <div class="roman" aria-hidden="true">{chapter.roman}</div>
+        <div>
+          <h2 id={'cap-'+c}>{chapter.title}</h2>
+          <p class="sub">{chapter.sub}</p>
+          {chapter.ids.map((id,i)=>{ const a=find(id); return a && (
+            <a class="entry" href={'/artigos/'+id}>
+              <span class="n">{c+1}.{i+1}</span>
+              <span><b>{a.data.title}</b><span class="desc">{a.data.description}</span></span>
+              <span class="min">{minutes(id)} min</span>
+            </a>
+          ); })}
+        </div>
+      </section>
+    ))}
+  </div>
+</Base>
+<style>
+  .idx { max-width:920px; padding-bottom:72px; }
+  .part { display:grid; grid-template-columns:110px 1fr; gap:32px; border-top:1px solid var(--ink); padding:24px 0 40px; }
+  .roman { font:500 2.8rem/1 var(--serif); color:var(--ink-3); }
+  .part h2 { font:600 1.4rem var(--sans); margin:4px 0; }
+  .part .sub { font-size:1rem; margin:0 0 18px; }
+  .entry { display:grid; grid-template-columns:44px 1fr auto; gap:12px; padding:14px 0; border-top:1px solid var(--rule-2); text-decoration:none; align-items:baseline; }
+  .n { font:500 12px var(--mono); color:var(--ink-3); }
+  .entry b { font:500 1.3rem/1.3 var(--serif); display:block; }
+  .desc { display:block; font-size:.95rem; color:var(--ink-2); line-height:1.5; }
+  .min { font:13px var(--sans); color:var(--ink-3); white-space:nowrap; }
+  .entry:hover b { text-decoration:underline; text-decoration-color:var(--rule); text-underline-offset:4px; }
+  @media(max-width:640px) { .part { grid-template-columns:1fr; gap:4px; } .roman { font-size:2rem; } .entry { grid-template-columns:34px 1fr; } .min { display:none; } }
+</style>

@@ -1,0 +1,116 @@
+---
+import { getCollection } from 'astro:content';
+import Base from './Base.astro';
+import { chapters, chapterOf } from '../data/learning';
+interface Props { title:string; description:string; category?:string; minutes?:number; headings?:{slug:string;text:string;depth:number}[]; jsonld?:Record<string,unknown>; group?:string; whenUse?:string; articleId?:string }
+const {title, description, minutes=5, headings=[], jsonld, group='Guia', whenUse, articleId} = Astro.props;
+const path=Astro.url.pathname.replace(/\/$/,'');
+const all=await getCollection('artigos',({data})=>!data.draft);
+const titleOf=(id:string)=>all.find(a=>a.id===id)?.data.title??id;
+const current=articleId?chapterOf(articleId):undefined;
+const kicker=current?`${current.roman} · ${current.title}`:group;
+const toc=headings.filter(h=>h.depth===2);
+---
+<Base title={title} description={description} wide ogType="article" jsonld={jsonld} breadcrumb={[{nome:group,href:group==='Técnicas'?'/tecnicas':group==='Leituras'?'/leituras':'/guia'},{nome:title,href:path}]}>
+  <div class="progress" aria-hidden="true"><i data-progress></i></div>
+  <div class="doc-grid">
+    <nav class="chapters" aria-label="Capítulos do guia">
+      <a class="guide-link" href="/guia" aria-current={path==='/guia'?'page':undefined}>Guia prático</a>
+      {chapters.map(chapter=>(
+        <details open={current===chapter}>
+          <summary><span>{chapter.roman} · {chapter.title}</span></summary>
+          {chapter.ids.map(id=><a href={'/artigos/'+id} aria-current={articleId===id?'page':undefined}>{titleOf(id)}</a>)}
+        </details>
+      ))}
+    </nav>
+
+    <article class="study-article" data-minutes={minutes}>
+      <p class="kicker"><b>{kicker}</b><span aria-hidden="true">·</span><span>{minutes} min de leitura</span></p>
+      <h1>{title}</h1>
+      <p class="dek">{description}</p>
+      {whenUse && <section class="when" id="quando-usar"><h2>Quando usar</h2><p>{whenUse}</p></section>}
+      {toc.length>2 && <details class="mobile-toc"><summary>Nesta página</summary>{toc.map(h=><a href={`#${h.slug}`}>{h.text}</a>)}</details>}
+      <div class="prose"><slot /></div>
+      <slot name="after" />
+    </article>
+
+    <aside class="margin" aria-label="Nesta página">
+      {toc.length>0 && <><span class="label">Nesta página</span>{toc.map(h=><a href={`#${h.slug}`} data-toc={h.slug}>{h.text}</a>)}</>}
+      <p class="left" data-left>{minutes} min restantes</p>
+    </aside>
+  </div>
+</Base>
+<script>
+  const bar=document.querySelector<HTMLElement>('[data-progress]');
+  const article=document.querySelector<HTMLElement>('.study-article');
+  const left=document.querySelector<HTMLElement>('[data-left]');
+  const links=[...document.querySelectorAll<HTMLAnchorElement>('[data-toc]')];
+  const heads=links.map(link=>document.getElementById(link.dataset.toc!)).filter((el):el is HTMLElement=>!!el);
+  const minutes=Number(article?.dataset.minutes)||1;
+  let ticking=false;
+  const update=()=>{
+    ticking=false;
+    if(!article||!bar) return;
+    const box=article.getBoundingClientRect();
+    const total=Math.max(1,article.offsetHeight-innerHeight*.6);
+    const progress=Math.min(1,Math.max(0,-box.top/total));
+    bar.style.transform=`scaleX(${progress})`;
+    if(left) left.textContent=progress>=.98?'Leitura concluída':`${Math.max(1,Math.round(minutes*(1-progress)))} min restantes`;
+    let active=-1; heads.forEach((head,i)=>{ if(head.getBoundingClientRect().top<140) active=i; });
+    links.forEach((link,i)=>link.classList.toggle('on',i===active));
+  };
+  addEventListener('scroll',()=>{ if(!ticking){ ticking=true; requestAnimationFrame(update); } },{passive:true});
+  update();
+
+  // Copiar mensagens de exemplo
+  document.querySelectorAll<HTMLButtonElement>('.copy-quote').forEach(button=>{
+    button.hidden=false;
+    button.addEventListener('click',async()=>{
+      const quote=button.closest('blockquote');
+      const content=[...(quote?.children??[])].filter(el=>!el.classList.contains('msg-head')).map(el=>(el as HTMLElement).innerText.trim()).join('\n\n');
+      try { await navigator.clipboard.writeText(content); button.textContent='Copiado'; }
+      catch { button.textContent='Selecione e copie'; }
+      setTimeout(()=>{ button.textContent='Copiar'; },1600);
+    });
+  });
+
+  // Exercício feito, guardado só neste navegador
+  const done=document.querySelector<HTMLInputElement>('.practice .done input');
+  if(done){
+    const key='jonnas-exercicio:'+location.pathname;
+    try { done.checked=localStorage.getItem(key)==='1'; } catch { /* opcional */ }
+    done.addEventListener('change',()=>{ try { done.checked?localStorage.setItem(key,'1'):localStorage.removeItem(key); } catch { /* opcional */ } });
+  }
+</script>
+<style>
+  .progress { position:sticky; top:65px; z-index:19; height:3px; margin-bottom:-3px; }
+  .progress i { display:block; height:100%; background:var(--ink); transform:scaleX(0); transform-origin:left; }
+  .doc-grid { display:grid; grid-template-columns:220px minmax(0,680px) 190px; gap:56px; justify-content:center; padding:48px 0 96px; }
+  .study-article { min-width:0; }
+  .chapters,.margin { position:sticky; top:96px; align-self:start; max-height:calc(100vh - 120px); overflow-y:auto; font:14px/1.45 var(--sans); }
+  .guide-link { display:block; padding:0 0 12px; font-weight:600; text-decoration:none; color:var(--ink-2); }
+  .guide-link[aria-current] { color:var(--ink); }
+  .chapters details { border-top:1px solid var(--rule); padding:10px 0; }
+  .chapters summary { list-style:none; cursor:pointer; display:flex; justify-content:space-between; gap:8px; font-weight:600; color:var(--ink-2); }
+  .chapters summary::-webkit-details-marker { display:none; }
+  .chapters summary::after { content:'+'; color:var(--ink-3); }
+  .chapters details[open] summary::after { content:'–'; }
+  .chapters details[open] summary { color:var(--ink); margin-bottom:6px; }
+  .chapters details a { display:block; text-decoration:none; color:var(--ink-2); padding:5px 0 5px 12px; border-left:1px solid var(--rule); }
+  .chapters details a:hover { color:var(--ink); }
+  .chapters details a[aria-current] { color:var(--ink); border-left:2px solid var(--ink); padding-left:11px; font-weight:500; }
+  .kicker { display:flex; flex-wrap:wrap; gap:6px 12px; align-items:center; font:500 13px var(--sans); color:var(--ink-3); margin:0 0 18px; }
+  .kicker b { color:var(--ink-2); font-weight:600; }
+  .study-article h1 { margin:0 0 18px; }
+  .dek { font:italic 1.3rem/1.45 var(--serif); color:var(--ink-2); margin:0 0 32px; }
+  .margin { font-size:13px; }
+  .margin .label { display:block; margin-bottom:6px; }
+  .margin a { display:block; text-decoration:none; color:var(--ink-3); padding:6px 0; border-bottom:1px solid var(--rule-2); }
+  .margin a:hover,.margin a.on { color:var(--ink); }
+  .left { margin-top:16px; color:var(--ink-3); }
+  .mobile-toc { display:none; border:1px solid var(--rule); background:var(--sheet); margin:0 0 36px; font:15px/1.4 var(--sans); }
+  .mobile-toc summary { padding:12px 16px; font-weight:600; cursor:pointer; }
+  .mobile-toc a { display:block; padding:9px 16px; border-top:1px solid var(--rule-2); text-decoration:none; color:var(--ink-2); }
+  @media(max-width:1180px) { .doc-grid { grid-template-columns:200px minmax(0,680px); gap:44px; } .margin { display:none; } .mobile-toc { display:block; } }
+  @media(max-width:900px) { .doc-grid { display:block; padding:32px 0 72px; } .chapters { display:none; } .study-article { max-width:680px; margin:auto; } .progress { top:0; } }
+</style>

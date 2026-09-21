@@ -21,6 +21,7 @@ const { projeto, compacto = false } = Astro.props;
   <ul class="stack-list">
     {projeto.stack.map((s) => <li class="tag">{s}</li>)}
   </ul>
+  {projeto.loja && <p class="loja"><a href={projeto.loja} rel="noopener">Instalar na Chrome Web Store</a></p>}
 </article>
 
 <style>
@@ -48,6 +49,10 @@ const { projeto, compacto = false } = Astro.props;
     font-size: 0.74rem;
     color: var(--text-faint);
     margin: 0 0 0.7rem;
+  }
+  .loja {
+    margin: 0.9rem 0 0;
+    font-size: 0.9rem;
   }
   .desc {
     margin: 0 0 0.9rem;

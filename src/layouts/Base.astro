@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import Analytics from '../components/Analytics.astro';
 import { site, sameAs } from '../config';
 
 interface Props {
@@ -11,6 +12,8 @@ interface Props {
   appendName?: boolean;
   ogType?: 'website' | 'article';
   noindex?: boolean;
+  wide?: boolean;
+  privateWorkspace?: boolean;
   /** JSON-LD adicional específico da página (ex.: BlogPosting, ItemList). */
   jsonld?: Record<string, unknown> | Record<string, unknown>[];
   /** Trilha de navegação. A home é adicionada automaticamente. */
@@ -23,6 +26,8 @@ const {
   appendName = true,
   ogType = 'website',
   noindex = false,
+  wide = false,
+  privateWorkspace = false,
   jsonld,
   breadcrumb = [],
 } = Astro.props;
@@ -88,6 +93,10 @@ const extras = jsonld ? (Array.isArray(jsonld) ? jsonld : [jsonld]) : [];
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline>
+      try { document.documentElement.dataset.theme = localStorage.getItem('jonnas-theme') === 'dark' ? 'dark' : 'light'; }
+      catch { document.documentElement.dataset.theme = 'light'; }
+    </script>
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <meta name="author" content={site.name} />
@@ -128,14 +137,15 @@ const extras = jsonld ? (Array.isArray(jsonld) ? jsonld : [jsonld]) : [];
       ))
     }
   </head>
-  <body>
+  <body data-private-workspace={privateWorkspace ? 'true' : undefined}>
     <a class="skip" href="#conteudo">Pular para o conteúdo</a>
     <Header />
     <main id="conteudo">
-      <div class="wrap">
+      <div class:list={['wrap', { wide }]}>
         <slot />
       </div>
     </main>
     <Footer />
+    {!privateWorkspace && <Analytics />}
   </body>
 </html>

@@ -1,0 +1,9 @@
+---
+import {getEntry,render} from 'astro:content';
+import Study from '../layouts/Study.astro';
+const article=await getEntry('artigos','guia-para-investigar-regras-de-negocio');
+if(!article) throw new Error('Guide content missing');
+const {Content,headings}=await render(article);
+const minutes=Math.max(1,Math.ceil((article.body?.trim().split(/\s+/).length??0)/200));
+---
+<Study title={article.data.title} description={article.data.description} headings={headings} minutes={minutes} category="Guia prático"><Content /></Study>

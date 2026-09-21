@@ -1,0 +1,140 @@
+---
+import Base from '../layouts/Base.astro';
+import { site } from '../config';
+import { projetos } from '../data/projetos';
+
+const networks = [
+  { name: 'LinkedIn', description: 'Para acompanhar meu trabalho e conversar.', href: site.profiles.linkedin },
+  { name: 'GitHub', description: 'Código, automação e projetos abertos.', href: site.profiles.github },
+  { name: 'YouTube', description: 'Meus vídeos sobre testes e tecnologia.', href: site.profiles.youtube },
+  { name: 'E-mail', description: 'Para falar comigo diretamente.', href: `mailto:${site.email}` },
+];
+const selectedProjects = [
+  {
+    nome: 'Proteu QA',
+    category: 'Extensão para Chrome',
+    introduction: 'Gere dados de teste, preencha formulários e prepare a automação na própria página que está testando. No modo Mapear, você clica nos campos e botões da tela, e o Proteu transforma cada elemento em uma variável com seu seletor.',
+    features: [
+      'Confira os seletores antes de automatizar: o painel mostra quantos elementos cada opção encontra na página. Exporte o mapeamento para Selenium, Playwright, Cypress ou Robot Framework.',
+      'Recrie os mesmos dados: cada pessoa fictícia tem uma referência copiável. Guarde essa referência no relato de um problema para repetir o teste com os mesmos dados.',
+      'Prepare casos variados: perfis de 12 países, exportação em lote e textos com tamanho exato, contando caracteres ou bytes conforme o teste exige.',
+      'Use o painel lateral para manter a ferramenta aberta enquanto interage com a página. A geração e o mapeamento funcionam localmente, sem enviar os dados a um servidor.',
+    ],
+  },
+  {
+    nome: 'Hefesto',
+    category: 'Requisitos e testes com apoio de IA',
+    introduction: 'Reúne a escrita de histórias, a revisão de requisitos e a preparação dos testes em um fluxo integrado ao Jira. Você começa com um requisito em texto ou uma imagem da tela e revisa a história e os critérios de aceite sugeridos pela IA.',
+    features: [
+      'Revise a história com os critérios INVEST para identificar lacunas, riscos e informações que ainda faltam.',
+      'Gere casos de teste como subtarefas no Jira e cruze os testes com os critérios de aceite para enxergar o que ainda não foi coberto.',
+      'Registre a execução, anexe evidências e gere relatórios. Use a interface web ou acesse as funções por um assistente compatível com MCP.',
+    ],
+  },
+  {
+    nome: 'Hermes',
+    category: 'Automação de testes mobile',
+    introduction: 'Framework com Appium, Java e Cucumber para testar aplicativos Android e iOS. Os cenários são escritos em português e compartilham passos e objetos de tela; as diferenças entre as plataformas ficam concentradas nos seletores e nas ações específicas.',
+    features: [
+      'Acompanhe exemplos de login, catálogo, carrinho e compra completa, com cenários que descrevem o comportamento esperado do aplicativo.',
+      'Execute cada cenário a partir de um estado conhecido, com limpeza do aplicativo, gestos nativos e esperas explícitas.',
+      'Consulte execuções no GitHub Actions e relatórios Allure com capturas de tela nas falhas. O projeto inclui a suíte Android e testes essenciais no simulador iOS.',
+    ],
+  },
+].flatMap(details => {
+  const project = projetos.find(project => project.nome === details.nome);
+  return project ? [{ ...project, ...details }] : [];
+});
+---
+
+<Base title="Redes, projetos e guia" description="Encontre Jonnas Figueiredo no LinkedIn, GitHub e YouTube. Conheça seus projetos e acesse o guia Como dominar qualquer regra de negócio.">
+  <div class="links-page">
+    <header class="profile">
+      <p class="eyebrow">Redes, projetos e guia</p>
+      <h1>Jonnas Figueiredo</h1>
+      <p class="role">QA Automation Engineer · SDET</p>
+      <p class="intro">Compartilho o que aprendo sobre testes, automação e regras de negócio. Aqui você encontra meus projetos e os caminhos para continuar a conversa.</p>
+    </header>
+
+    <section aria-labelledby="redes">
+      <h2 id="redes">Onde me encontrar</h2>
+      <ul class="networks">
+        {networks.map(network => <li>
+          <a class="network" href={network.href} rel={network.href.startsWith('mailto:') ? undefined : 'me noopener'}>
+            <span class="link-title">{network.name}<span aria-hidden="true">↗</span></span>
+            <span class="link-description">{network.description}</span>
+          </a>
+        </li>)}
+      </ul>
+    </section>
+
+    <section class="guide" aria-labelledby="guia-titulo">
+      <p class="eyebrow">Para continuar o estudo</p>
+      <h2 id="guia-titulo">Como dominar qualquer regra de negócio</h2>
+      <p>O guia da palestra, com exemplos, técnicas e perguntas para investigar a próxima regra que chegar até você.</p>
+      <a class="btn primary" href="/guia">Abrir o guia <span aria-hidden="true">→</span></a>
+      <a class="guide-secondary" href="/ferramenta">Montar uma nota de investigação</a>
+    </section>
+
+    <section class="projects" aria-labelledby="projetos">
+      <div class="section-heading"><h2 id="projetos">Meus projetos</h2><p>Ferramentas e código para o trabalho de QA.</p></div>
+      <ul class="project-list">
+        {selectedProjects.map(project => <li class="project">
+          <p class="eyebrow">{project.category}</p>
+          <h3>{project.nome}</h3>
+          <p>{project.introduction}</p>
+          <ul class="project-features">{project.features.map(feature => <li>{feature}</li>)}</ul>
+          <div class="project-actions">
+            {project.loja && <a href={project.loja}>Conhecer na Chrome Web Store <span aria-hidden="true">↗</span></a>}
+            <a href={project.repo}>{project.loja ? 'Ver o código' : 'Conhecer no GitHub'} <span aria-hidden="true">↗</span></a>
+          </div>
+        </li>)}
+      </ul>
+      <p class="more-projects"><a href={site.profiles.github}>Conhecer mais projetos no GitHub <span aria-hidden="true">↗</span></a></p>
+    </section>
+    <p class="about"><a href="/sobre">Mais sobre mim <span aria-hidden="true">→</span></a></p>
+  </div>
+</Base>
+
+<style>
+  .links-page { max-width:800px; margin:0 auto; padding:52px 0 24px; }
+  .profile { max-width:650px; margin-bottom:36px; }
+  h1 { font-size:clamp(2.4rem,6vw,3.5rem); }
+  .role { font:500 .9rem/1.5 var(--sans); color:var(--g); margin-bottom:18px; }
+  .intro { color:var(--ink-2); font-size:1.15rem; line-height:1.6; margin:0; }
+  h2 { font:500 1.8rem/1.2 var(--serif); margin-bottom:18px; }
+  ul { list-style:none; margin:0; padding:0; }
+  .networks { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+  .network { display:block; height:100%; padding:18px 20px; border:1px solid var(--rule); background:var(--sheet); text-decoration:none; }
+  .network:hover { border-color:var(--g); }
+  .link-title { display:flex; justify-content:space-between; gap:16px; font:600 1rem/1.4 var(--sans); }
+  .link-title span { color:var(--g); }
+  .link-description { display:block; margin-top:6px; font-size:1rem; line-height:1.5; color:var(--ink-2); }
+  .guide { border-left:3px solid var(--g); background:var(--g-bg); padding:28px; margin:36px 0 44px; }
+  .guide .eyebrow { color:var(--g); }
+  .guide h2 { font-size:2rem; max-width:24ch; margin-bottom:12px; }
+  .guide > p:not(.eyebrow) { max-width:56ch; color:var(--ink-2); line-height:1.55; }
+  .guide-secondary { display:inline-block; margin:12px 0 0 20px; font:500 .85rem/1.6 var(--sans); }
+  .section-heading p { color:var(--ink-2); margin-top:-8px; font-size:1rem; }
+  .project { border-top:1px solid var(--rule); padding:28px 0; }
+  .project .eyebrow { color:var(--g); }
+  .project h3 { margin:0 0 12px; font:500 1.65rem/1.2 var(--serif); }
+  .project p:not(.eyebrow) { margin:0 0 12px; color:var(--ink-2); font-size:1rem; line-height:1.5; }
+  .project-features { list-style:disc; padding-left:20px; margin:16px 0; color:var(--ink-2); font-size:1rem; line-height:1.55; }
+  .project-features li { padding-left:4px; margin:10px 0; }
+  .project-features li::marker { color:var(--g); }
+  .more-projects { margin:0 0 28px; font:500 .95rem/1.5 var(--sans); }
+  .more-projects a { display:inline-block; padding:12px 0; }
+  .project-actions { display:flex; flex-wrap:wrap; gap:8px 24px; font:500 .85rem/1.5 var(--sans); }
+  .project-actions a { display:inline-block; padding:8px 0; }
+  .about { border-top:1px solid var(--rule); padding-top:24px; font:500 .9rem/1.5 var(--sans); }
+  @media(max-width:560px) {
+    .links-page { padding-top:32px; }
+    .profile { margin-bottom:28px; }
+    .networks { gap:10px; }
+    .network { padding:16px 14px; }
+    .guide { padding:22px 20px; margin:28px 0 36px; }
+    .guide h2 { font-size:1.75rem; }
+    .guide-secondary { display:block; margin:16px 0 0; }
+  }
+</style>

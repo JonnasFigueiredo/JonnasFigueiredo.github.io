@@ -1,6 +1,5 @@
 ---
 import type { CollectionEntry } from 'astro:content';
-import { formatarData, formatarDataISO } from '../utils/data';
 
 interface Props {
   artigos: CollectionEntry<'artigos'>[];
@@ -21,9 +20,7 @@ const { artigos } = Astro.props;
               <a href={`/artigos/${artigo.id}`}>{artigo.data.title}</a>
             </h3>
             <p class="desc">{artigo.data.description}</p>
-            <time datetime={formatarDataISO(artigo.data.pubDate)}>
-              {formatarData(artigo.data.pubDate)}
-            </time>
+            <p class="article-kind">{artigo.data.kind === 'traducao' ? 'Tradução comentada' : 'Guia prático'}</p>
           </article>
         </li>
       ))}
@@ -52,10 +49,5 @@ const { artigos } = Astro.props;
     margin: 0 0 0.3rem;
     color: var(--text-dim);
     font-size: 0.95rem;
-  }
-  time {
-    font-family: var(--mono);
-    font-size: 0.74rem;
-    color: var(--text-faint);
   }
 </style>

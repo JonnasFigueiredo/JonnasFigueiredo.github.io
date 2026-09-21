@@ -1,0 +1,57 @@
+---
+import Base from '../layouts/Base.astro';
+import {readings} from '../data/learning';
+const topics=[...new Set(readings.map(r=>r.topic))];
+const startHere=['core','ctfl','spec-by-example'];
+---
+<Base title="Leituras recomendadas" description="Livros, guias e artigos sobre análise de negócio, teste, colaboração, comunicação e aprendizagem.">
+  <header class="page-head"><p class="eyebrow">Leituras</p><h1>O que ler para ir além.</h1><p class="lead">Escolha uma leitura pela dúvida da sua tarefa. Os pontos de partida apresentam análise de negócio, técnicas de teste e trabalho com exemplos.</p></header>
+  <p class="reading-intro">Na <a href="/artigos/bibliografia-comentada">bibliografia comentada</a>, explico como essas referências se relacionam com o guia. Os artigos de aprendizagem tratam de memória e estudo; as leituras de teste ajudam a investigar o produto.</p>
+  <div class="filters" role="group" aria-label="Filtrar por tema" hidden>
+    <button type="button" data-topic-filter="todos" aria-pressed="true">Todos</button>
+    {topics.map(topic=><button type="button" data-topic-filter={topic} aria-pressed="false">{topic}</button>)}
+    <span id="reading-count" aria-live="polite"></span>
+  </div>
+  <div class="reading-list">{readings.map(book=>(
+    <article class="reading" id={book.id} data-topic={book.topic}>
+      <p class="meta"><span class="label">{book.type} · {book.topic}</span>{startHere.includes(book.id) && <span class="tag">Ponto de partida</span>}</p>
+      <h2>{book.title}</h2>
+      {'author' in book && <p class="by">{book.author}</p>}
+      <p class="why">{book.why}</p>
+      <p class="note">{book.note}</p>
+      <div class="resource-links"><a href={book.study}>Ler o texto relacionado</a>{'href' in book && <a href={book.href}>{book.label}</a>}</div>
+    </article>
+  ))}</div>
+</Base>
+<script>
+  const group=document.querySelector<HTMLElement>('.filters');
+  const buttons=[...document.querySelectorAll<HTMLButtonElement>('[data-topic-filter]')];
+  const rows=[...document.querySelectorAll<HTMLElement>('[data-topic]')];
+  const count=document.querySelector<HTMLElement>('#reading-count');
+  if(group){
+    group.hidden=false;
+    buttons.forEach(button=>button.addEventListener('click',()=>{
+      const topic=button.dataset.topicFilter;
+      buttons.forEach(b=>b.setAttribute('aria-pressed',String(b===button)));
+      let visible=0;
+      rows.forEach(row=>{ row.hidden=topic!=='todos'&&row.dataset.topic!==topic; if(!row.hidden) visible++; });
+      if(count) count.textContent=`${visible} ${visible===1?'leitura':'leituras'}`;
+    }));
+  }
+</script>
+<style>
+  .reading-intro { max-width:760px; margin-bottom:28px; color:var(--ink-2); }
+  .filters { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:0 0 28px; }
+  .filters button { font:500 13px var(--sans); padding:6px 12px; border:1px solid var(--rule); border-radius:2px; background:transparent; color:var(--ink-2); }
+  .filters button:hover { border-color:var(--ink); color:var(--ink); }
+  .filters button[aria-pressed=true] { background:var(--ink); color:var(--paper); border-color:var(--ink); }
+  #reading-count { font:13px var(--sans); color:var(--ink-3); margin-left:6px; }
+  .reading-list { max-width:760px; padding-bottom:56px; }
+  .reading { border-top:1px solid var(--rule); padding:26px 0; }
+  .meta { display:flex; flex-wrap:wrap; gap:8px 12px; align-items:center; margin:0; }
+  .reading h2 { font:500 1.6rem/1.2 var(--serif); letter-spacing:-.005em; margin:8px 0 2px; }
+  .by { font:14px var(--sans); color:var(--ink-3); margin:0 0 10px; }
+  .why { margin:0 0 .5em; }
+  .note { font-size:.95rem; color:var(--ink-2); margin:0 0 12px; }
+  .resource-links { font:500 14px var(--sans); }
+</style>

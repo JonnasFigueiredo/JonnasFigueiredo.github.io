@@ -1,0 +1,52 @@
+---
+import { projetos } from '../data/projetos';
+interface Props { placement?: 'home' | 'limites' | 'relato' }
+const { placement = 'home' } = Astro.props;
+const proteu = projetos.find(project => project.nome === 'Proteu QA');
+const content = {
+  home: {
+    title: 'Na hora de preparar os testes',
+    text: 'Criei o Proteu QA para ajudar nessa parte do trabalho: gerar dados de teste, preencher formulários e mapear elementos na própria página que você está testando.',
+  },
+  limites: {
+    title: 'Precisa de um texto com tamanho exato?',
+    text: 'No Proteu QA, extensão que desenvolvi para Chrome, você pode gerar texto com o tamanho e a unidade de contagem escolhidos. Isso ajuda a preparar os valores vizinhos do limite que você definiu para o teste.',
+  },
+  relato: {
+    title: 'Para repetir o teste com os mesmos dados',
+    text: 'O Proteu QA, extensão que desenvolvi para Chrome, gera pessoas de teste com uma referência reproduzível. Você pode guardar essa referência no relato para recriar os mesmos dados durante a investigação.',
+  },
+}[placement];
+const headingId = `proteu-${placement}-titulo`;
+---
+{proteu?.loja && (
+  <aside class:list={['proteu-note', { 'on-home': placement === 'home' }]} id="proteu-qa" aria-labelledby={headingId}>
+    <div class="intro">
+      <p class="label">Proteu QA · Extensão para Chrome</p>
+      <h2 id={headingId}>{content.title}</h2>
+      <p class="description">{content.text}</p>
+      <a class="store-link" href={proteu.loja} data-track={`proteu_${placement}`}>
+        Conhecer na Chrome Web Store <span aria-hidden="true">↗</span>
+      </a>
+    </div>
+    {placement === 'home' && <dl class="uses">
+      <div><dt>Reproduzir um caso</dt><dd>Guarde a referência dos dados gerados e use a mesma pessoa de teste depois.</dd></div>
+      <div><dt>Testar um limite</dt><dd>Gere textos no tamanho e na unidade de contagem que o teste precisa.</dd></div>
+      <div><dt>Preparar a automação</dt><dd>Mapeie elementos da página e obtenha os localizadores.</dd></div>
+    </dl>}
+  </aside>
+)}
+<style>
+  .proteu-note { border-top:1px solid var(--rule); margin-top:40px; padding-top:24px; }
+  .label { margin:0 0 10px; color:var(--g); }
+  h2 { font:500 1.55rem/1.2 var(--serif); margin:0 0 12px; }
+  .description { color:var(--ink-2); margin:0 0 16px; font-size:1rem; line-height:1.6; max-width:65ch; }
+  .store-link { display:inline-flex; gap:8px; align-items:baseline; font:500 14px/1.5 var(--sans); }
+  .on-home { display:grid; grid-template-columns:1.15fr 1fr; gap:56px; margin:0 0 64px; padding:30px 32px; background:var(--sheet); border:1px solid var(--rule); border-left:3px solid var(--g); }
+  .on-home h2 { font-size:1.9rem; }
+  .uses { margin:0; }
+  .uses div + div { border-top:1px solid var(--rule-2); margin-top:14px; padding-top:14px; }
+  dt { font:600 14px/1.4 var(--sans); margin-bottom:3px; }
+  dd { margin:0; font-size:1rem; line-height:1.5; color:var(--ink-2); }
+  @media(max-width:700px) { .on-home { grid-template-columns:1fr; gap:24px; padding:24px 20px; margin-bottom:40px; } }
+</style>
