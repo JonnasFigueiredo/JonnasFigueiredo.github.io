@@ -32,9 +32,15 @@ img { display: block; max-width: 100%; height: auto; }
 .signature-mark span { color: var(--dev-accent); }
 .signature-label { font-weight: 600; font-size: 14px; line-height: 1.2; }
 .signature-label small { display: block; margin-top: 4px; color: var(--dev-muted); font-size: 11px; font-weight: 400; letter-spacing: .02em; }
-.dev-header nav { display: flex; gap: 31px; margin-left: auto; }
-.dev-header nav a, .header-return { text-decoration: none; font: 500 13px/1.4 var(--dev-font); }
-.dev-header nav a:hover, .header-return:hover, .footer-links a:hover { color: var(--dev-accent); }
+.dev-header nav { position: relative; display: flex; align-items: center; gap: 31px; margin-left: auto; }
+.dev-header nav > a, .header-return, .nav-profiles summary { text-decoration: none; font: 500 13px/1.4 var(--dev-font); }
+.dev-header nav > a:hover, .header-return:hover, .footer-links a:hover, .nav-profiles summary:hover, .nav-profiles[open] summary { color: var(--dev-accent); }
+.nav-profiles summary { cursor: pointer; list-style: none; white-space: nowrap; }
+.nav-profiles summary::-webkit-details-marker { display: none; }
+.nav-profiles summary::after { content: '⌄'; display: inline-block; margin-left: 5px; font: 500 14px/1 var(--dev-mono); transition: transform .2s ease; }
+.nav-profiles[open] summary::after { transform: rotate(180deg); }
+.nav-profiles summary:focus-visible { outline: 2px solid var(--dev-accent); outline-offset: 4px; }
+.nav-profile-menu { position: absolute; z-index: 10; top: calc(100% + 24px); right: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; width: min(460px, calc(100vw - 36px)); padding: 10px; border: 1px solid var(--dev-line); background: var(--dev-bg); box-shadow: 0 18px 45px #1d242021; }
 .header-return { padding-left: 28px; border-left: 1px solid var(--dev-line); white-space: nowrap; }
 .header-return span, .footer-links span { font-family: var(--dev-mono); font-weight: 400; }
 .eyebrow { margin: 0; font: 500 11px/1.45 var(--dev-mono); letter-spacing: .11em; text-transform: uppercase; color: var(--dev-accent); }
@@ -65,15 +71,13 @@ img { display: block; max-width: 100%; height: auto; }
 .about-section h2 { margin: 0; font-size: clamp(30px, 4vw, 50px); font-weight: 500; line-height: 1.1; letter-spacing: -.055em; }
 .about-section p { margin: 0 0 20px; font-size: 17px; color: #454d46; }
 .about-section .text-link { display: inline-block; margin-top: 5px; }
-.profiles-section { margin-top: 120px; }
-.profile-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 28px; }
-.profile-card { display: flex; flex-direction: column; min-height: 190px; padding: 24px 28px; border: 1px solid var(--dev-line); background: var(--dev-surface); text-decoration: none; transition: border-color .2s ease, transform .2s ease; }
-.profile-card:hover { border-color: var(--dev-accent); transform: translateY(-3px); }
+.profile-card { display: flex; flex-direction: column; min-height: 160px; padding: 18px; border: 1px solid var(--dev-line); background: var(--dev-surface); text-decoration: none; transition: border-color .2s ease, transform .2s ease; }
+.profile-card:hover { border-color: var(--dev-accent); transform: translateY(-2px); }
 .profile-card-top { display: flex; justify-content: space-between; gap: 16px; color: var(--dev-muted); font: 400 11px/1.4 var(--dev-mono); text-transform: uppercase; letter-spacing: .05em; }
 .profile-card-top span:last-child { color: var(--dev-accent); font-size: 19px; line-height: .8; }
-.profile-card strong { margin-top: auto; font-size: clamp(30px, 3.4vw, 43px); font-weight: 500; letter-spacing: -.055em; line-height: 1.1; }
-.profile-address { margin-top: 8px; color: var(--dev-muted); font: 400 12px/1.5 var(--dev-mono); overflow-wrap: anywhere; }
-.contact-section { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 32px; margin: 115px 0 110px; padding-top: 25px; border-top: 1px solid var(--dev-ink); }
+.profile-card strong { margin-top: auto; font-size: 29px; font-weight: 500; letter-spacing: -.055em; line-height: 1.1; }
+.profile-address { margin-top: 8px; color: var(--dev-muted); font: 400 10px/1.5 var(--dev-mono); overflow-wrap: anywhere; }
+.contact-section { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 32px; margin: 130px 0 110px; padding-top: 25px; border-top: 1px solid var(--dev-ink); }
 .contact-section h2 { margin: 13px 0 0; font-size: clamp(37px, 5.4vw, 70px); line-height: 1.05; font-weight: 500; letter-spacing: -.06em; }
 .contact-section .text-link { margin-bottom: 8px; white-space: nowrap; }
 .dev-footer { border-top: 1px solid var(--dev-line); }
@@ -123,7 +127,7 @@ img { display: block; max-width: 100%; height: auto; }
   .signature { min-width: 0; }
   .signature-label { font-size: 13px; }
   .header-return { font-size: 11px; }
-  .dev-header nav a { font-size: 12px; }
+  .dev-header nav > a, .nav-profiles summary { font-size: 12px; }
   .hero { padding: 75px 0 72px; }
   .hero h1 { font-size: clamp(46px, 11vw, 68px); }
   .section-line, .group-title { align-items: flex-start; flex-direction: column; gap: 5px; }
@@ -135,8 +139,9 @@ img { display: block; max-width: 100%; height: auto; }
   .project-row .line { grid-column: 2; font-size: 13px; }
   .project-row .arrow { grid-column: 3; grid-row: 1 / 3; padding-top: 8px; }
   .about-section, .contact-section { grid-template-columns: 1fr; gap: 22px; margin-top: 90px; }
-  .profiles-section { margin-top: 90px; }
-  .profile-grid { grid-template-columns: 1fr; }
+  .nav-profile-menu { grid-template-columns: 1fr; }
+  .profile-card { min-height: 105px; }
+  .profile-card strong { font-size: 24px; }
   .contact-section { margin-bottom: 90px; }
   .case-back { margin: 31px 0 50px; }
   .case-header { grid-template-columns: 1fr; gap: 35px; }
@@ -152,5 +157,5 @@ img { display: block; max-width: 100%; height: auto; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .project-row, .project-row .arrow, .profile-card { transition: none; }
+  .project-row, .project-row .arrow, .profile-card, .nav-profiles summary::after { transition: none; }
 }

@@ -46,7 +46,21 @@ const canonical = new URL(Astro.url.pathname, site.url).href;
         <nav aria-label="Navegação do portfólio">
           <a href="/dev/#projetos">Projetos</a>
           <a href="/dev/#sobre">Sobre</a>
-          <a href="/dev/#perfis">Perfis</a>
+          <details class="nav-profiles">
+            <summary>Perfis</summary>
+            <div class="nav-profile-menu">
+              <a class="profile-card" href={site.profiles.github} target="_blank" rel="me noopener noreferrer">
+                <span class="profile-card-top"><span>01 / Repositórios</span><span aria-hidden="true">↗</span></span>
+                <strong>GitHub</strong>
+                <span class="profile-address">github.com/JonnasFigueiredo</span>
+              </a>
+              <a class="profile-card" href={site.profiles.linkedin} target="_blank" rel="me noopener noreferrer">
+                <span class="profile-card-top"><span>02 / Carreira</span><span aria-hidden="true">↗</span></span>
+                <strong>LinkedIn</strong>
+                <span class="profile-address">linkedin.com/in/jonnas-figueiredo</span>
+              </a>
+            </div>
+          </details>
           <a href="/dev/#contato">Contato</a>
         </nav>
         <a class="header-return" href="/" aria-label="Voltar ao site principal">Site principal <span aria-hidden="true">↗</span></a>
@@ -67,5 +81,19 @@ const canonical = new URL(Astro.url.pathname, site.url).href;
         </div>
       </div>
     </footer>
+    <script>
+      const profiles = document.querySelector<HTMLDetailsElement>('.nav-profiles');
+      if (profiles) {
+        document.addEventListener('click', event => {
+          if (!profiles.contains(event.target as Node)) profiles.open = false;
+        });
+        document.addEventListener('keydown', event => {
+          if (event.key === 'Escape' && profiles.open) {
+            profiles.open = false;
+            profiles.querySelector('summary')?.focus();
+          }
+        });
+      }
+    </script>
   </body>
 </html>
