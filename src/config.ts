@@ -24,5 +24,6 @@ export const nav = [
   { href: '/leituras', label: 'Leituras' },
   { href: '/ferramenta', label: 'Ferramenta' },
   { href: '/sobre', label: 'Sobre' },
+  { href: '/dev', label: 'Portfólio dev' },
   { href: '/links', label: 'Links' },
 ];

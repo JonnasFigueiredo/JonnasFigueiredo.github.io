@@ -1,0 +1,70 @@
+---
+import '../styles/dev.css';
+import { site } from '../config';
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+const canonical = new URL(Astro.url.pathname, site.url).href;
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f4f3ef" />
+    <title>{title} | Jonnas Figueiredo</title>
+    <meta name="description" content={description} />
+    <meta name="author" content={site.name} />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={`${title} | Jonnas Figueiredo`} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary" />
+    <script type="application/ld+json" set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'ProfilePage',
+      name: title,
+      url: canonical,
+      about: { '@id': `${site.url}/#person` },
+    })} />
+  </head>
+  <body>
+    <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+    <header class="dev-header">
+      <div class="dev-shell header-inner">
+        <a class="signature" href="/dev/" aria-label="Portfólio de desenvolvimento de Jonnas Figueiredo">
+          <span class="signature-mark" aria-hidden="true">JF<span>.</span></span>
+          <span class="signature-label">Jonnas Figueiredo <small>Desenvolvimento de software</small></span>
+        </a>
+        <nav aria-label="Navegação do portfólio">
+          <a href="/dev/#projetos">Projetos</a>
+          <a href="/dev/#sobre">Sobre</a>
+          <a href="/dev/#contato">Contato</a>
+        </nav>
+        <a class="header-return" href="/" aria-label="Voltar ao site principal">Site principal <span aria-hidden="true">↗</span></a>
+      </div>
+    </header>
+
+    <main id="conteudo" class="dev-shell"><slot /></main>
+
+    <footer class="dev-footer">
+      <div class="dev-shell footer-inner">
+        <span>© {new Date().getFullYear()} Jonnas Figueiredo</span>
+        <div class="footer-links">
+          <a href={site.profiles.github} rel="me noopener noreferrer" target="_blank">GitHub <span aria-hidden="true">↗</span></a>
+          <a href={site.profiles.linkedin} rel="me noopener noreferrer" target="_blank">LinkedIn <span aria-hidden="true">↗</span></a>
+          <a href={site.profiles.youtube} rel="me noopener noreferrer" target="_blank">YouTube <span aria-hidden="true">↗</span></a>
+          <a href={'mailto:' + site.email}>E-mail <span aria-hidden="true">↗</span></a>
+          <a href="/privacidade">Privacidade</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

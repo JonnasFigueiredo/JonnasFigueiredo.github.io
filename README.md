@@ -16,6 +16,7 @@ npm run preview  # serve o dist/
 |---|---|
 | Trocar domínio, e-mail, redes | `src/config.ts` e `astro.config.mjs` (`site`) |
 | Adicionar/editar projeto | `src/data/projetos.ts` (campo `loja` para link de loja) |
+| Editar o portfólio de desenvolvimento | `src/data/devPortfolio.ts`, `src/pages/dev/` e `src/styles/dev.css` |
 | Escrever artigo | novo `.md` em `src/content/artigos/` |
 | Capítulos e ordem de leitura | `chapters` em `src/data/learning.ts` |
 | Leituras recomendadas | `readings` em `src/data/learning.ts` |

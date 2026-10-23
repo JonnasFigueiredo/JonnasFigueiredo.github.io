@@ -1,0 +1,61 @@
+---
+import Dev from '../../../layouts/Dev.astro';
+import { devProjects, type DevProject } from '../../../data/devPortfolio';
+
+export function getStaticPaths() {
+  return devProjects.map(project => ({ params: { slug: project.slug }, props: { project } }));
+}
+
+const { project } = Astro.props as { project: DevProject };
+---
+
+<Dev title={project.name} description={project.summary}>
+  <a class="case-back" href="/dev/#projetos">← Voltar aos projetos</a>
+  <article>
+    <header class="case-header">
+      <div>
+        <p class="eyebrow">{project.category} / {project.status}</p>
+        <h1>{project.name}</h1>
+        <p class="case-line">{project.line}</p>
+      </div>
+      <dl class="case-meta">
+        <dt>Tipo</dt><dd>{project.category}</dd>
+        <dt>Estado</dt><dd>{project.status}</dd>
+        <dt>Tecnologias</dt><dd>{project.stack.join(' · ')}</dd>
+      </dl>
+    </header>
+
+    <div class="case-intro">
+      <p>{project.summary}</p>
+      <div class="case-links">
+        {project.source && <a class="text-link" href={project.source} target="_blank" rel="noopener noreferrer">Ver código no GitHub <span aria-hidden="true">↗</span></a>}
+        <a class="text-link" href="/dev/#contato">Conversar sobre o projeto <span aria-hidden="true">↗</span></a>
+      </div>
+    </div>
+
+    {project.image && <figure class="case-media">
+      <img src={project.image.src} alt={project.image.alt} loading="lazy" />
+      <figcaption>Captura da aplicação · {project.name}</figcaption>
+    </figure>}
+
+    <section class="case-content" aria-labelledby="problem-title"><h2 id="problem-title">O problema</h2><p>{project.problem}</p></section>
+    <section class="case-content" aria-labelledby="solution-title"><h2 id="solution-title">A solução</h2><p>{project.solution}</p></section>
+
+    <section class="case-content" aria-labelledby="decisions-title">
+      <h2 id="decisions-title">Decisões técnicas</h2>
+      <div>
+        {project.decisions.map((decision, index) => <div class="case-decision">
+          <span class="number">{String(index + 1).padStart(2, '0')}</span>
+          <h3>{decision.title}</h3>
+          <p>{decision.text}</p>
+        </div>)}
+      </div>
+    </section>
+
+    <section class="case-end" aria-labelledby="next-title">
+      <p class="eyebrow" id="next-title">Estado e próximos passos</p>
+      <p>{project.next}</p>
+      <a class="text-link" href="/dev/#projetos">Explorar outros projetos <span aria-hidden="true">↗</span></a>
+    </section>
+  </article>
+</Dev>

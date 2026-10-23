@@ -1,16 +1,27 @@
 import { test, expect } from '@playwright/test';
 
-const pages = ['/', '/guia', '/tecnicas', '/leituras', '/ferramenta', '/sobre', '/links', '/artigos/conversar-com-suporte', '/artigos/tabela-de-decisao'];
+const pages = ['/', '/guia', '/tecnicas', '/leituras', '/ferramenta', '/sobre', '/links', '/dev/', '/dev/projetos/laleo/', '/dev/projetos/midas/', '/artigos/conversar-com-suporte', '/artigos/tabela-de-decisao'];
 
-test('menu principal leva às seis seções', async ({ page }) => {
+test('menu principal leva às seções do site e ao portfólio', async ({ page }) => {
   await page.goto('/');
   const nav = page.getByRole('navigation', { name: 'Navegação principal' });
-  for (const label of ['Guia', 'Técnicas', 'Leituras', 'Ferramenta', 'Sobre', 'Links']) {
+  for (const label of ['Guia', 'Técnicas', 'Leituras', 'Ferramenta', 'Sobre', 'Portfólio dev', 'Links']) {
     await expect(nav.getByRole('link', { name: label, exact: true })).toBeVisible();
   }
   await nav.getByRole('link', { name: 'Técnicas', exact: true }).click();
   await expect(page.locator('main h1')).toHaveText('Escolha pela dúvida.');
   await expect(page.locator('.part')).toHaveCount(5);
+});
+
+test('portfólio abre os estudos de caso e oferece contato e código público', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('navigation', { name: 'Navegação principal' }).getByRole('link', { name: 'Portfólio dev' }).click();
+  await expect(page).toHaveURL(/\/dev\/?$/);
+  await expect(page.getByRole('link', { name: 'Conhecer o projeto Ulisses' })).toBeVisible();
+  await page.getByRole('link', { name: 'Conhecer o projeto Ulisses' }).click();
+  await expect(page.locator('main h1')).toHaveText('Ulisses');
+  await expect(page.getByRole('link', { name: /Ver código no GitHub/ })).toHaveAttribute('href', 'https://github.com/JonnasFigueiredo/Ulisses');
+  await expect(page.getByRole('link', { name: /Conversar sobre o projeto/ })).toHaveAttribute('href', '/dev/#contato');
 });
 
 test('páginas antigas redirecionam para as novas', async ({ page }) => {

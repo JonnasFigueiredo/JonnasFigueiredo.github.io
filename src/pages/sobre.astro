@@ -15,6 +15,7 @@ const jsonld={'@type':'ProfilePage',name:'Sobre Jonnas Figueiredo',mainEntity:{'
     <p>Entrar num domínio novo exige aprender enquanto o trabalho acontece. Este guia reúne formas de começar: recortar uma dúvida, procurar quem conhece o processo, comparar exemplos e registrar a decisão. Os textos de comunicação fazem parte desse caminho, porque entender uma regra também depende de como a gente pergunta e confere a resposta.</p>
     <p>Você pode seguir pelo <a href="/guia">guia prático</a> ou escolher uma <a href="/tecnicas">técnica pela dúvida da sua tarefa</a>.</p>
     <h2 id="o-que-eu-construo">O que eu construo</h2>
+    <p>Também reuni meus projetos de desenvolvimento Java, React e backend em um <a href="/dev/">portfólio de software</a>, com contexto e decisões técnicas de cada um.</p>
     {chosen.map(p=><section class="project"><h3><a href={p.loja??p.repo}>{p.nome==='Proteu QA'?'Proteu':p.nome}</a></h3><p>{p.resumo}.</p><div class="project-links">{p.loja&&<a href={p.loja} rel="noopener">Instalar na Chrome Web Store</a>}<a href={p.repo}>Conhecer no GitHub</a></div></section>)}
     <h2>Vamos conversar</h2><p>Estou no <a href={site.profiles.linkedin} rel="me noopener">LinkedIn</a>, no <a href={site.profiles.github} rel="me noopener">GitHub</a> e no <a href={site.profiles.youtube} rel="me noopener">YouTube</a>. Também pode falar comigo por <a href={'mailto:'+site.email}>e-mail</a>.</p>
   </article>
