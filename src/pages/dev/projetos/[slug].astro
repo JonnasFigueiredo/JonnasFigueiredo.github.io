@@ -52,10 +52,10 @@ const { project } = Astro.props as { project: DevProject };
       </div>
     </section>
 
-    <section class="case-end" aria-labelledby="next-title">
+    {project.next && <section class="case-end" aria-labelledby="next-title">
       <p class="eyebrow" id="next-title">Estado e próximos passos</p>
       <p>{project.next}</p>
       <a class="text-link" href="/dev/#projetos">Explorar outros projetos <span aria-hidden="true">↗</span></a>
-    </section>
+    </section>}
   </article>
 </Dev>

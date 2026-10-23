@@ -11,7 +11,7 @@ export type DevProject = {
   problem: string;
   solution: string;
   decisions: { title: string; text: string }[];
-  next: string;
+  next?: string;
 };
 
 export const devProjects: DevProject[] = [
@@ -57,7 +57,6 @@ export const devProjects: DevProject[] = [
       { title: 'Segredos de produção explícitos', text: 'O perfil de produção exige configuração dos segredos de autenticação e criptografia dos templates.' },
       { title: 'Fluxo demonstrável', text: 'Cadastro, verificação e histórico formam um percurso completo, com builds Docker e testes automatizados das regras principais.' },
     ],
-    next: 'A eficácia biométrica ainda precisa de testes com dados reais. O projeto não é uma solução antifraude certificada nem um sistema de ponto homologado.',
   },
   {
     slug: 'laleo',
