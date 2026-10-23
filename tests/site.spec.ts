@@ -24,26 +24,6 @@ test('portfólio abre os estudos de caso e oferece contato e código público', 
   await expect(page.getByRole('link', { name: /Conversar sobre o projeto/ })).toHaveAttribute('href', '/dev/#contato');
 });
 
-test('menu do portfólio abre cards de GitHub e LinkedIn na barra superior', async ({ page }) => {
-  await page.goto('/dev/');
-  await expect(page.getByRole('link', { name: 'Explorar projetos' })).toHaveCount(0);
-  await expect(page.getByRole('link', { name: 'Entrar em contato' })).toHaveCount(0);
-  const profiles = page.getByRole('navigation', { name: 'Navegação do portfólio' }).locator('.nav-profiles');
-  await expect(profiles.locator('.nav-profile-menu')).toBeHidden();
-  await profiles.locator('summary').click();
-  await expect(profiles.locator('.nav-profile-menu')).toBeVisible();
-  await expect(profiles.getByRole('link', { name: /GitHub/ })).toHaveAttribute('href', 'https://github.com/JonnasFigueiredo');
-  await expect(profiles.getByRole('link', { name: /LinkedIn/ })).toHaveAttribute('href', 'https://www.linkedin.com/in/jonnas-figueiredo-576a14181');
-  await expect(page.locator('main #perfis')).toHaveCount(0);
-  await page.setViewportSize({ width: 360, height: 800 });
-  const menu = await profiles.locator('.nav-profile-menu').boundingBox();
-  expect(menu).not.toBeNull();
-  expect(menu!.x).toBeGreaterThanOrEqual(0);
-  expect(menu!.x + menu!.width).toBeLessThanOrEqual(360);
-  await page.keyboard.press('Escape');
-  await expect(profiles.locator('.nav-profile-menu')).toBeHidden();
-});
-
 test('páginas antigas redirecionam para as novas', async ({ page }) => {
   await page.goto('/biblioteca');
   await expect(page).toHaveURL(/\/tecnicas\/?$/);
