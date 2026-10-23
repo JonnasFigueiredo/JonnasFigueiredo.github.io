@@ -42,10 +42,8 @@ img { display: block; max-width: 100%; height: auto; }
 .hero { padding: clamp(80px, 11vw, 150px) 0 100px; }
 .hero h1 { max-width: 850px; margin: 22px 0 25px; font-size: clamp(49px, 6.6vw, 91px); font-weight: 500; line-height: .98; letter-spacing: -.065em; }
 .hero .intro { max-width: 650px; margin: 0; color: #434c45; font-size: clamp(17px, 2.05vw, 21px); line-height: 1.55; }
-.hero-actions { display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center; margin-top: 35px; }
-.hero-actions a, .text-link { font-weight: 600; font-size: 14px; text-decoration: none; border-bottom: 1px solid currentColor; padding-bottom: 3px; }
-.hero-actions a:hover, .text-link:hover { color: var(--dev-accent); }
-.hero-actions a:first-child { color: var(--dev-accent); }
+.text-link { font-weight: 600; font-size: 14px; text-decoration: none; border-bottom: 1px solid currentColor; padding-bottom: 3px; }
+.text-link:hover { color: var(--dev-accent); }
 .section-line { display: flex; align-items: baseline; justify-content: space-between; gap: 24px; border-top: 1px solid var(--dev-ink); padding-top: 20px; }
 .section-line h2 { margin: 0; font-size: clamp(24px, 3vw, 37px); font-weight: 500; letter-spacing: -.045em; }
 .section-line p { margin: 0; color: var(--dev-muted); font: 400 12px/1.5 var(--dev-mono); text-align: right; }
@@ -67,7 +65,15 @@ img { display: block; max-width: 100%; height: auto; }
 .about-section h2 { margin: 0; font-size: clamp(30px, 4vw, 50px); font-weight: 500; line-height: 1.1; letter-spacing: -.055em; }
 .about-section p { margin: 0 0 20px; font-size: 17px; color: #454d46; }
 .about-section .text-link { display: inline-block; margin-top: 5px; }
-.contact-section { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 32px; margin: 130px 0 110px; padding-top: 25px; border-top: 1px solid var(--dev-ink); }
+.profiles-section { margin-top: 120px; }
+.profile-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 28px; }
+.profile-card { display: flex; flex-direction: column; min-height: 190px; padding: 24px 28px; border: 1px solid var(--dev-line); background: var(--dev-surface); text-decoration: none; transition: border-color .2s ease, transform .2s ease; }
+.profile-card:hover { border-color: var(--dev-accent); transform: translateY(-3px); }
+.profile-card-top { display: flex; justify-content: space-between; gap: 16px; color: var(--dev-muted); font: 400 11px/1.4 var(--dev-mono); text-transform: uppercase; letter-spacing: .05em; }
+.profile-card-top span:last-child { color: var(--dev-accent); font-size: 19px; line-height: .8; }
+.profile-card strong { margin-top: auto; font-size: clamp(30px, 3.4vw, 43px); font-weight: 500; letter-spacing: -.055em; line-height: 1.1; }
+.profile-address { margin-top: 8px; color: var(--dev-muted); font: 400 12px/1.5 var(--dev-mono); overflow-wrap: anywhere; }
+.contact-section { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 32px; margin: 115px 0 110px; padding-top: 25px; border-top: 1px solid var(--dev-ink); }
 .contact-section h2 { margin: 13px 0 0; font-size: clamp(37px, 5.4vw, 70px); line-height: 1.05; font-weight: 500; letter-spacing: -.06em; }
 .contact-section .text-link { margin-bottom: 8px; white-space: nowrap; }
 .dev-footer { border-top: 1px solid var(--dev-line); }
@@ -129,6 +135,8 @@ img { display: block; max-width: 100%; height: auto; }
   .project-row .line { grid-column: 2; font-size: 13px; }
   .project-row .arrow { grid-column: 3; grid-row: 1 / 3; padding-top: 8px; }
   .about-section, .contact-section { grid-template-columns: 1fr; gap: 22px; margin-top: 90px; }
+  .profiles-section { margin-top: 90px; }
+  .profile-grid { grid-template-columns: 1fr; }
   .contact-section { margin-bottom: 90px; }
   .case-back { margin: 31px 0 50px; }
   .case-header { grid-template-columns: 1fr; gap: 35px; }
@@ -144,5 +152,5 @@ img { display: block; max-width: 100%; height: auto; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .project-row, .project-row .arrow { transition: none; }
+  .project-row, .project-row .arrow, .profile-card { transition: none; }
 }

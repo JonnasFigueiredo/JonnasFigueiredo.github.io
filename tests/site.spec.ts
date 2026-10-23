@@ -24,6 +24,17 @@ test('portfólio abre os estudos de caso e oferece contato e código público', 
   await expect(page.getByRole('link', { name: /Conversar sobre o projeto/ })).toHaveAttribute('href', '/dev/#contato');
 });
 
+test('portfólio reúne GitHub e LinkedIn em cards acessíveis pelo menu', async ({ page }) => {
+  await page.goto('/dev/');
+  await expect(page.getByRole('link', { name: 'Explorar projetos' })).toHaveCount(0);
+  await expect(page.getByRole('link', { name: 'Entrar em contato' })).toHaveCount(0);
+  await page.getByRole('navigation', { name: 'Navegação do portfólio' }).getByRole('link', { name: 'Perfis' }).click();
+  await expect(page).toHaveURL(/\/dev\/#perfis$/);
+  const profiles = page.locator('#perfis');
+  await expect(profiles.getByRole('link', { name: /GitHub/ })).toHaveAttribute('href', 'https://github.com/JonnasFigueiredo');
+  await expect(profiles.getByRole('link', { name: /LinkedIn/ })).toHaveAttribute('href', 'https://www.linkedin.com/in/jonnas-figueiredo-576a14181');
+});
+
 test('páginas antigas redirecionam para as novas', async ({ page }) => {
   await page.goto('/biblioteca');
   await expect(page).toHaveURL(/\/tecnicas\/?$/);
